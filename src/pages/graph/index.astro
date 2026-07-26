@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GraphWorkspace from '../../components/graph/GraphWorkspace.astro';
+import { detectGraphArtifacts, GRAPH_SECTION_CARDS, graphPageHref } from '../../lib/graph';
+
+const artifacts = detectGraphArtifacts();
+---
+
+<BaseLayout
+  title="Graph"
+  description="Semantic navigation layer for SensOS — Graph Explorer, inspector, and GraphProvider API."
+>
+  <header class="page-header">
+    <p class="eyebrow">Semantic Navigation</p>
+    <h1>Graph</h1>
+    <p>
+      The Graph section is a semantic navigation layer for humans and future AI agents.
+      It complements — and does not replace — the canonical RFC documentation.
+    </p>
+    <p class="complement">
+      Explore RFCs, repositories, runtime layers, products, and architecture components.
+      Selection focuses the visualization, updates breadcrumbs, and opens the inspector.
+    </p>
+  </header>
+
+  <GraphWorkspace />
+
+  <section class="repo-graphs" aria-labelledby="repo-graphs-heading">
+    <h2 id="repo-graphs-heading">Named views</h2>
+    <p class="section-lede">
+      Stable entry points into the explorer. Layout does not change when Graphify
+      artifacts arrive — only data density increases.
+    </p>
+    <div class="card-grid">
+      {
+        GRAPH_SECTION_CARDS.map((card) => (
+          <article class="panel panel-pad">
+            <h3>{card.title}</h3>
+            <p>{card.description}</p>
+            <a class="btn" href={graphPageHref({ view: card.view })}>
+              Open view →
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="panel panel-pad notes">
+    <h2>Provider & AI readiness</h2>
+    <ul>
+      <li>
+        UI talks only to <code>GraphProvider</code>. Current implementation:
+        <code>GraphifyProvider</code>.
+      </li>
+      <li>
+        Reserved swaps: <code>HEKBGraphProvider</code>, <code>Neo4jProvider</code>,
+        <code>CustomAPIProvider</code>.
+      </li>
+      <li>
+        Methods: <code>getNode</code>, <code>getNeighbors</code>, <code>search</code>,
+        <code>getPath</code>, <code>getMetadata</code>.
+      </li>
+      <li>
+        Optional artifacts: <code>graph.json</code>, <code>nodes.json</code>,
+        <code>edges.json</code>, <code>metadata.json</code>, <code>graph.html</code>,
+        <code>GRAPH_REPORT.md</code>.
+      </li>
+      <li>
+        Machine API: <a href="/api/v1/graph/metadata.json"><code>/api/v1/graph/metadata.json</code></a>
+        · artifacts ready: {artifacts.ready ? 'partial/full' : 'seed-only'}.
+      </li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .complement {
+    margin: var(--space-3) 0 0;
+    max-width: 48rem;
+    color: var(--color-text-muted);
+  }
+
+  .repo-graphs {
+    margin-top: var(--space-6);
+  }
+
+  .repo-graphs h2,
+  .notes h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .section-lede {
+    margin: 0 0 var(--space-4);
+    color: var(--color-text-muted);
+    max-width: 48rem;
+  }
+
+  .card-grid {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 800px) {
+    .card-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .card-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .card-grid h3 {
+    margin: 0 0 var(--space-2);
+    font-size: 1rem;
+  }
+
+  .card-grid p {
+    margin: 0 0 var(--space-3);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .notes {
+    margin-top: var(--space-6);
+  }
+
+  .notes ul {
+    margin: var(--space-3) 0 0;
+    padding-left: 1.2rem;
+  }
+
+  .notes li {
+    margin-bottom: 0.45rem;
+    color: var(--color-text-muted);
+  }
+</style>

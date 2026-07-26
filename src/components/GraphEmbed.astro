@@ -1,0 +1,101 @@
+---
+import type { DetectedGraphArtifacts, GraphFocus } from '../lib/graph';
+import { graphEmbedSrc } from '../lib/graph';
+
+interface Props {
+  artifacts: DetectedGraphArtifacts;
+  focus?: GraphFocus;
+}
+
+const { artifacts, focus = {} } = Astro.props;
+const embedSrc = graphEmbedSrc(artifacts, focus);
+---
+
+<section class="graph-embed panel" aria-labelledby="embedded-graph-heading">
+  <div class="embed-header">
+    <h2 id="embedded-graph-heading">Embedded Graph</h2>
+    {
+      embedSrc && (
+        <a class="btn" href={embedSrc} target="_blank" rel="noopener noreferrer">
+          Open fullscreen
+        </a>
+      )
+    }
+  </div>
+
+  {
+    embedSrc ? (
+      <div class="embed-frame-wrap">
+        <iframe
+          class="embed-frame"
+          src={embedSrc}
+          title="SensOS Graphify knowledge graph"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+        />
+      </div>
+    ) : (
+      <div class="placeholder panel-pad">
+        <p class="placeholder-title">Graph not generated yet</p>
+        <p>
+          Graphify has not published <code>public/graph/graph.html</code>. The
+          interactive visualization will appear here automatically after the next
+          Graphify generation and deploy.
+        </p>
+        <p class="muted">
+          See <a href="/developer#graphify">Developer Guide · Graphify</a> or
+          <code>docs/graph/README.md</code> for generation steps. Missing artifacts
+          never block the documentation build.
+        </p>
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .graph-embed {
+    overflow: hidden;
+  }
+
+  .embed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .embed-header h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .embed-frame-wrap {
+    background: var(--color-surface-2);
+  }
+
+  .embed-frame {
+    display: block;
+    width: 100%;
+    min-height: min(70vh, 44rem);
+    height: 70vh;
+    border: 0;
+    background: var(--color-surface);
+  }
+
+  .placeholder-title {
+    margin: 0 0 var(--space-2);
+    font-weight: 600;
+  }
+
+  .placeholder p {
+    margin: 0 0 var(--space-3);
+    max-width: 48rem;
+  }
+
+  .muted {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+</style>

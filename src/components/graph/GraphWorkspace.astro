@@ -1,0 +1,613 @@
+---
+import { detectGraphArtifacts } from '../../lib/graph';
+import GraphEmbed from '../GraphEmbed.astro';
+import GraphArtifacts from '../GraphArtifacts.astro';
+
+const artifacts = detectGraphArtifacts();
+---
+
+<section class="graph-workspace" data-graph-workspace aria-label="Graph Explorer">
+  <div class="workspace-toolbar panel">
+    <label class="search-wrap">
+      <span class="sr-only">Semantic search</span>
+      <input
+        type="search"
+        class="semantic-search"
+        placeholder="Search RFCs, repositories, layers, products, components…"
+        data-graph-search
+        autocomplete="off"
+      />
+    </label>
+    <div class="toolbar-meta" data-graph-meta>Loading graph provider…</div>
+  </div>
+
+  <nav class="breadcrumbs panel" aria-label="Semantic breadcrumbs" data-graph-breadcrumbs>
+    <span class="crumb muted">Select a node to build a path</span>
+  </nav>
+
+  <div class="workspace-grid">
+    <aside class="sidebar panel" aria-label="Graph explorer">
+      <h2>Explorer</h2>
+      <div data-graph-sidebar></div>
+    </aside>
+
+    <div class="center-column">
+      <GraphEmbed artifacts={artifacts} />
+      <section class="relations panel panel-pad" aria-label="Relationships">
+        <h2>Relationships</h2>
+        <p class="muted" data-graph-relations-empty>Select a node to inspect relationship edges.</p>
+        <ul class="relation-list" data-graph-relations hidden></ul>
+      </section>
+    </div>
+
+    <aside class="inspector panel" aria-label="Node inspector">
+      <h2>Inspector</h2>
+      <div data-graph-inspector>
+        <p class="muted">No node selected.</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="workspace-footer">
+    <GraphArtifacts artifacts={artifacts} />
+  </div>
+</section>
+
+<script>
+  import {
+    DEFAULT_BREADCRUMB_PATH,
+    EXPLORER_GROUPS,
+    loadClientGraphProvider,
+    parseFocusFromLocation,
+    resolveInitialNodeId,
+  } from '../../lib/graph/client';
+  import type { GraphNeighbor, GraphNode, GraphProvider } from '../../lib/graph/types';
+
+  const root = document.querySelector('[data-graph-workspace]');
+  if (root) {
+    const sidebarEl = root.querySelector('[data-graph-sidebar]')!;
+    const inspectorEl = root.querySelector('[data-graph-inspector]')!;
+    const breadcrumbsEl = root.querySelector('[data-graph-breadcrumbs]')!;
+    const relationsEl = root.querySelector('[data-graph-relations]') as HTMLElement;
+    const relationsEmptyEl = root.querySelector('[data-graph-relations-empty]') as HTMLElement;
+    const searchEl = root.querySelector('[data-graph-search]') as HTMLInputElement;
+    const metaEl = root.querySelector('[data-graph-meta]')!;
+    const resultsHost = document.createElement('div');
+    resultsHost.className = 'search-results panel';
+    resultsHost.hidden = true;
+    searchEl.parentElement?.appendChild(resultsHost);
+
+    let provider: GraphProvider;
+    let selectedId: string | null = null;
+    let crumbPath: string[] = [...DEFAULT_BREADCRUMB_PATH];
+
+    function escapeHtml(value: string): string {
+      return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function syncUrl(nodeId: string) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('node', nodeId);
+      const node = provider.getNode(nodeId) as GraphNode | null;
+      if (node?.type === 'rfc') url.searchParams.set('rfc', node.id);
+      else url.searchParams.delete('rfc');
+      if (node?.type === 'repository') url.searchParams.set('repo', node.id);
+      else url.searchParams.delete('repo');
+      if (node?.type === 'layer') url.searchParams.set('layer', node.id);
+      else url.searchParams.delete('layer');
+      if (node?.type === 'product') url.searchParams.set('product', node.id);
+      else url.searchParams.delete('product');
+      history.replaceState({}, '', url);
+
+      const iframe = root.querySelector('.embed-frame') as HTMLIFrameElement | null;
+      if (iframe) {
+        const base = iframe.src.split('#')[0];
+        iframe.src = `${base}#node=${encodeURIComponent(nodeId)}`;
+      }
+    }
+
+    function renderBreadcrumbs() {
+      breadcrumbsEl.innerHTML = crumbPath
+        .map((id, index) => {
+          const node = provider.getNode(id) as GraphNode | null;
+          const label = escapeHtml(node?.title ?? id);
+          const active = id === selectedId ? ' active' : '';
+          return `
+            ${index > 0 ? '<span class="crumb-sep" aria-hidden="true">↓</span>' : ''}
+            <button type="button" class="crumb${active}" data-node-id="${escapeHtml(id)}">${label}</button>
+          `;
+        })
+        .join('');
+    }
+
+    function renderSidebar() {
+      sidebarEl.innerHTML = EXPLORER_GROUPS.map((group) => {
+        const items = group.nodeIds
+          .map((id) => {
+            const node = provider.getNode(id) as GraphNode | null;
+            if (!node) return '';
+            const active = node.id === selectedId ? ' active' : '';
+            return `<button type="button" class="nav-item${active}" data-node-id="${escapeHtml(node.id)}">
+              <span class="nav-id">${escapeHtml(node.id)}</span>
+              <span class="nav-title">${escapeHtml(node.title)}</span>
+            </button>`;
+          })
+          .join('');
+        return `<details class="group" open>
+          <summary>${escapeHtml(group.label)}</summary>
+          <div class="group-items">${items}</div>
+        </details>`;
+      }).join('');
+    }
+
+    function linkOrDash(href: string | undefined, label: string): string {
+      if (!href) return '<span class="muted">—</span>';
+      return `<a href="${escapeHtml(href)}" ${href.startsWith('http') ? 'target="_blank" rel="noopener noreferrer"' : ''}>${escapeHtml(label)}</a>`;
+    }
+
+    function renderInspector(node: GraphNode, neighbors: GraphNeighbor[]) {
+      const relatedRfcs = node.relatedRfcs?.length
+        ? node.relatedRfcs
+        : neighbors
+            .filter((n) => n.node.type === 'rfc')
+            .map((n) => n.node.id);
+      const relatedComponents = node.relatedComponents?.length
+        ? node.relatedComponents
+        : neighbors
+            .filter((n) => n.node.type === 'component')
+            .map((n) => n.node.id);
+
+      inspectorEl.innerHTML = `
+        <dl class="inspector-dl">
+          <div><dt>Title</dt><dd>${escapeHtml(node.title)}</dd></div>
+          <div><dt>Type</dt><dd><span class="type-pill">${escapeHtml(node.type)}</span></dd></div>
+          <div><dt>Description</dt><dd>${escapeHtml(node.description || '—')}</dd></div>
+          <div><dt>Repository</dt><dd>${escapeHtml(node.repository || '—')}</dd></div>
+          <div><dt>Related RFCs</dt><dd>${
+            relatedRfcs.length
+              ? relatedRfcs
+                  .map((id) => `<button type="button" class="inline-link" data-node-id="${escapeHtml(id)}">${escapeHtml(id)}</button>`)
+                  .join(', ')
+              : '—'
+          }</dd></div>
+          <div><dt>Related Components</dt><dd>${
+            relatedComponents.length
+              ? relatedComponents
+                  .map((id) => `<button type="button" class="inline-link" data-node-id="${escapeHtml(id)}">${escapeHtml(id)}</button>`)
+                  .join(', ')
+              : '—'
+          }</dd></div>
+          <div><dt>Implementation Status</dt><dd>${escapeHtml(node.implementationStatus || 'Placeholder')}</dd></div>
+          <div><dt>Canonical URL</dt><dd>${linkOrDash(node.canonicalUrl, node.canonicalUrl || '—')}</dd></div>
+          <div><dt>GitHub Repository</dt><dd>${linkOrDash(node.githubUrl, node.repository || node.githubUrl || '—')}</dd></div>
+        </dl>
+        <div class="inspector-actions">
+          ${
+            node.type === 'rfc' && node.docsUrl
+              ? `<a class="btn btn-primary" href="${escapeHtml(node.docsUrl)}">Open RFC</a>`
+              : ''
+          }
+          ${
+            node.docsUrl
+              ? `<a class="btn" href="${escapeHtml(node.docsUrl)}">Open Documentation</a>`
+              : ''
+          }
+          <a class="btn" href="/graph?node=${encodeURIComponent(node.id)}">Open Graph Node</a>
+        </div>
+      `;
+    }
+
+    function renderRelations(neighbors: GraphNeighbor[]) {
+      if (!neighbors.length) {
+        relationsEl.hidden = true;
+        relationsEmptyEl.hidden = false;
+        return;
+      }
+      relationsEmptyEl.hidden = true;
+      relationsEl.hidden = false;
+      relationsEl.innerHTML = neighbors
+        .map((item) => {
+          const arrow = item.direction === 'outgoing' ? '→' : '←';
+          return `<li>
+            <button type="button" data-node-id="${escapeHtml(item.node.id)}">
+              <span class="rel-type">${escapeHtml(String(item.edge.type))}</span>
+              <span class="rel-arrow">${arrow}</span>
+              <span class="rel-target">${escapeHtml(item.node.id)}</span>
+              <span class="rel-title">${escapeHtml(item.node.title)}</span>
+            </button>
+          </li>`;
+        })
+        .join('');
+    }
+
+    async function selectNode(nodeId: string, opts: { pushCrumb?: boolean } = {}) {
+      const node = (await provider.getNode(nodeId)) as GraphNode | null;
+      if (!node) return;
+      selectedId = node.id;
+
+      if (opts.pushCrumb !== false) {
+        const last = crumbPath[crumbPath.length - 1];
+        if (last !== node.id) {
+          const path = (await provider.getPath(last ?? node.id, node.id)) as
+            | { nodes: GraphNode[] }
+            | null;
+          if (path && path.nodes.length > 1) {
+            crumbPath = path.nodes.map((n) => n.id).slice(-6);
+          } else {
+            crumbPath = [...crumbPath.filter((id) => id !== node.id), node.id].slice(-6);
+          }
+        }
+      } else {
+        crumbPath = [node.id];
+      }
+
+      const neighbors = (await provider.getNeighbors(node.id)) as GraphNeighbor[];
+      renderSidebar();
+      renderBreadcrumbs();
+      renderInspector(node, neighbors);
+      renderRelations(neighbors);
+      syncUrl(node.id);
+      window.__SENSOS_GRAPH_SELECTED__ = node;
+    }
+
+    function onClick(event: Event) {
+      const target = (event.target as HTMLElement).closest('[data-node-id]') as HTMLElement | null;
+      if (!target) return;
+      const id = target.getAttribute('data-node-id');
+      if (id) void selectNode(id);
+    }
+
+    root.addEventListener('click', onClick);
+
+    searchEl.addEventListener('input', async () => {
+      const q = searchEl.value.trim();
+      if (!q) {
+        resultsHost.hidden = true;
+        resultsHost.innerHTML = '';
+        return;
+      }
+      const hits = await provider.search(q, 12);
+      resultsHost.hidden = false;
+      resultsHost.innerHTML =
+        hits
+          .map(
+            (hit) => `<button type="button" class="search-hit" data-node-id="${escapeHtml(hit.node.id)}">
+              <strong>${escapeHtml(hit.node.id)}</strong>
+              <span>${escapeHtml(hit.node.title)}</span>
+              <em>${escapeHtml(hit.node.type)}</em>
+            </button>`,
+          )
+          .join('') || '<p class="muted">No matches.</p>';
+    });
+
+    resultsHost.addEventListener('click', (event) => {
+      const target = (event.target as HTMLElement).closest('[data-node-id]') as HTMLElement | null;
+      if (!target) return;
+      const id = target.getAttribute('data-node-id');
+      resultsHost.hidden = true;
+      searchEl.value = '';
+      if (id) void selectNode(id, { pushCrumb: true });
+    });
+
+    void (async () => {
+      const loaded = await loadClientGraphProvider();
+      provider = loaded.provider;
+      metaEl.textContent = `${loaded.metadata.provider} · ${loaded.metadata.node_count} nodes · ${loaded.metadata.edge_count} edges`;
+      window.__SENSOS_GRAPH_PROVIDER__ = provider;
+      window.__SENSOS_GRAPH_METADATA__ = loaded.metadata;
+
+      const focus = parseFocusFromLocation(window.location.search);
+      const initial = resolveInitialNodeId(provider, focus);
+      crumbPath = [...DEFAULT_BREADCRUMB_PATH];
+      if (!crumbPath.includes(initial)) crumbPath = [initial, ...crumbPath].slice(0, 5);
+      await selectNode(initial, { pushCrumb: false });
+      // Ensure breadcrumb reflects the canonical example when landing without focus.
+      if (!focus.node && !focus.rfc && !focus.repo && !focus.layer) {
+        crumbPath = [...DEFAULT_BREADCRUMB_PATH];
+        renderBreadcrumbs();
+      }
+    })();
+  }
+</script>
+
+<style>
+  .graph-workspace {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .workspace-toolbar {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    position: relative;
+  }
+
+  @media (min-width: 900px) {
+    .workspace-toolbar {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+  }
+
+  .search-wrap {
+    position: relative;
+    display: block;
+  }
+
+  .semantic-search {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  .toolbar-meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+  }
+
+  :global(.search-results) {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100% + 0.35rem);
+    z-index: 20;
+    max-height: 18rem;
+    overflow: auto;
+    padding: 0.35rem;
+  }
+
+  :global(.search-hit) {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.5rem;
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    padding: 0.55rem 0.65rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  :global(.search-hit:hover) {
+    background: var(--color-accent-soft);
+  }
+
+  :global(.search-hit em) {
+    font-style: normal;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  :global(.crumb) {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-radius: 4px;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.25rem 0.55rem;
+    cursor: pointer;
+  }
+
+  :global(.crumb.active),
+  :global(.crumb:hover) {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  :global(.crumb-sep) {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+  }
+
+  .workspace-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 1100px) {
+    .workspace-grid {
+      grid-template-columns: 16rem minmax(0, 1fr) 20rem;
+      align-items: start;
+    }
+  }
+
+  .sidebar,
+  .inspector {
+    padding: var(--space-4);
+  }
+
+  .sidebar h2,
+  .inspector h2,
+  .relations h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+  }
+
+  :global(.group) {
+    border-top: 1px solid var(--color-border);
+    padding: 0.35rem 0;
+  }
+
+  :global(.group summary) {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.35rem 0;
+  }
+
+  :global(.group-items) {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  :global(.nav-item) {
+    display: grid;
+    gap: 0.1rem;
+    width: 100%;
+    text-align: left;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    padding: 0.45rem 0.5rem;
+    cursor: pointer;
+  }
+
+  :global(.nav-item:hover),
+  :global(.nav-item.active) {
+    background: var(--color-accent-soft);
+  }
+
+  :global(.nav-id) {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-accent);
+  }
+
+  :global(.nav-title) {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  .center-column {
+    display: grid;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  :global(.inspector-dl) {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+  }
+
+  :global(.inspector-dl > div) {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  :global(.inspector-dl dt) {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  :global(.inspector-dl dd) {
+    margin: 0;
+    font-size: 0.9rem;
+    word-break: break-word;
+  }
+
+  :global(.type-pill) {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  :global(.inspector-actions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: var(--space-4);
+  }
+
+  :global(.inline-link) {
+    border: 0;
+    background: transparent;
+    color: var(--color-link);
+    font: inherit;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .relation-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .relation-list :global(button) {
+    display: grid;
+    grid-template-columns: 7.5rem 1rem 1fr;
+    gap: 0.35rem 0.5rem;
+    width: 100%;
+    text-align: left;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: inherit;
+    font: inherit;
+    padding: 0.55rem 0.65rem;
+    cursor: pointer;
+  }
+
+  .relation-list :global(button:hover) {
+    border-color: var(--color-accent);
+  }
+
+  :global(.rel-type) {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-accent);
+  }
+
+  :global(.rel-arrow) {
+    color: var(--color-text-muted);
+  }
+
+  :global(.rel-target) {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    grid-column: 3;
+  }
+
+  :global(.rel-title) {
+    grid-column: 3;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+  }
+
+  .muted {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .workspace-footer {
+    margin-top: var(--space-2);
+  }
+</style>

@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Developer Guide"
+  description="Contributor and implementer guidance for the SensOS Developer Portal."
+>
+  <header class="page-header">
+    <p class="eyebrow">Contributors</p>
+    <h1>Developer Guide</h1>
+    <p>
+      How to work with SensOS specifications, contribute RFCs, and consume
+      machine-readable portal APIs.
+    </p>
+  </header>
+
+  <section class="panel panel-pad">
+    <h2>Local development</h2>
+    <pre><code>npm install
+npm run dev</code></pre>
+    <p>Open <code>http://localhost:4321</code>. Build with <code>npm run build</code>.</p>
+  </section>
+
+  <section>
+    <h2>Content layout</h2>
+    <pre><code>docs/
+├── index.md
+├── rfc/
+│   ├── index.md
+│   ├── RFC-NVS-GOV-0001.md
+│   ├── RFC-NVS-0199.md
+│   └── …
+├── architecture/
+├── products/
+├── governance/
+├── developer/
+└── compliance/</code></pre>
+  </section>
+
+  <section>
+    <h2>RFC contribution workflow</h2>
+    <ol>
+      <li>Open a PR against <a href="https://github.com/GemminAI/sensos-docs">GemminAI/sensos-docs</a>.</li>
+      <li>Add or update Markdown under <code>docs/rfc/</code> with required frontmatter.</li>
+      <li>Follow the five-stage change control in <a href="/rfc/RFC-NVS-GOV-0001">RFC-NVS-GOV-0001</a>.</li>
+      <li>Do not manually edit <code>/compliance/index.json</code> — CI generates it.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Required RFC frontmatter</h2>
+    <pre><code>---
+title: Example Title
+status: Proposed
+category: Runtime protocol
+version: "1.0.0"
+updated: 2026-07-26
+repository: GemminAI/nvs-runtime
+supersedes: []
+superseded_by: []
+related:
+  - RFC-NVS-0199
+---</code></pre>
+  </section>
+
+  <section>
+    <h2>Machine interfaces</h2>
+    <ul>
+      <li><a href="/api/v1/rfc.json"><code>GET /api/v1/rfc.json</code></a> — RFC index JSON</li>
+      <li><a href="/api/v1/products.json"><code>GET /api/v1/products.json</code></a> — product identity map</li>
+      <li><code>GET /api/v1/rfc/{'{id}'}.json</code> — RFC metadata + markdown</li>
+      <li><a href="/compliance/index.json"><code>GET /compliance/index.json</code></a> — compliance index</li>
+    </ul>
+  </section>
+
+  <section id="graphify">
+    <h2>GraphProvider & Graphify (optional)</h2>
+    <p>
+      The <a href="/graph">Graph</a> section is a semantic navigation layer backed by
+      <code>GraphProvider</code> (current: <code>GraphifyProvider</code>). Artifacts under
+      <code>public/graph/</code> are optional and must never block documentation builds.
+    </p>
+    <pre><code>pip install graphifyy
+graphify .
+mkdir -p public/graph
+cp graphify-out/graph.html graphify-out/graph.json graphify-out/GRAPH_REPORT.md public/graph/</code></pre>
+    <p>
+      Internal API surface for future agents/MCP:
+      <code>getNode</code>, <code>getNeighbors</code>, <code>search</code>,
+      <code>getPath</code>, <code>getMetadata</code>.
+    </p>
+    <p>
+      Full instructions: <a href="https://github.com/GemminAI/sensos-docs/blob/main/docs/graph/README.md"><code>docs/graph/README.md</code></a>.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  section {
+    margin-bottom: var(--space-6);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.15rem;
+  }
+
+  ol,
+  ul {
+    padding-left: 1.2rem;
+  }
+
+  li {
+    margin-bottom: 0.45rem;
+  }
+
+  pre {
+    margin: 0 0 var(--space-3);
+  }
+</style>

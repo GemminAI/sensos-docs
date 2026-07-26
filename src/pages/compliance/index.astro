@@ -1,0 +1,287 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllRfcs, rfcHref } from '../../lib/rfc';
+import compliance from '../../../public/compliance/index.json';
+
+const rfcs = await getAllRfcs();
+const health = compliance.health_metrics;
+const specs = Object.entries(compliance.specifications ?? {});
+
+const metrics = [
+  {
+    label: 'Total RFCs',
+    value: health.total_rfcs ?? rfcs.length,
+    hint: 'Published specifications in the portal index',
+  },
+  {
+    label: 'Compliance Rate',
+    value: health.ssot_compliance_rate ?? health.compliance_rate ?? 'Preview',
+    hint: 'SSOT / Layer 0 identity compliance',
+  },
+  {
+    label: 'Broken Links',
+    value: health.broken_links ?? 0,
+    hint: 'Cross-specification link failures (target: 0)',
+  },
+  {
+    label: 'CI Status',
+    value: health.ci_status ?? 'BUILD_OK',
+    hint: 'Portal build / future rfc-auditor gate',
+  },
+  {
+    label: 'Artifact Freshness',
+    value: compliance.generated_at ? compliance.generated_at : 'Preview',
+    hint: 'Target: less than 24 hours since last compilation',
+    wide: true,
+  },
+];
+---
+
+<BaseLayout
+  title="Compliance"
+  description="SensOS compliance dashboard for RFC health, CI status, and artifact freshness."
+>
+  <header class="page-header">
+    <p class="eyebrow">Public Dashboard · Developer Preview</p>
+    <h1>Compliance</h1>
+    <p>
+      Ecosystem health metrics published at
+      <a href="/compliance/index.json"><code>/compliance/index.json</code></a>.
+      Values marked Preview are structural placeholders until automated rfc-auditor CI
+      overwrites the artifact. Page layout will not change when live metrics arrive.
+    </p>
+  </header>
+
+  <p class="source-note">
+    Data source: <code>/compliance/index.json</code>
+    · environment <code>{compliance.environment}</code>
+    · schema <code>{compliance.schema_version}</code>
+  </p>
+
+  <div class="widget-grid">
+    {
+      metrics.map((metric) => (
+        <article class:list={['widget', 'panel', 'panel-pad', { wide: metric.wide }]}>
+          <h2>{metric.label}</h2>
+          <p class:list={['metric', { small: metric.wide }]}>{metric.value}</p>
+          <p class="hint">{metric.hint}</p>
+        </article>
+      ))
+    }
+  </div>
+
+  <section class="panel panel-pad" aria-labelledby="spec-matrix-heading">
+    <h2 id="spec-matrix-heading">Specification matrix</h2>
+    <p class="section-lede">
+      Per-RFC compliance rows from the published index. CI status PLACEHOLDER means the
+      implementation auditor has not yet reported for that document.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">RFC</th>
+            <th scope="col">Status</th>
+            <th scope="col">Implementation</th>
+            <th scope="col">Repository</th>
+            <th scope="col">CI</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            specs.map(([id, spec]) => (
+              <tr>
+                <td>
+                  <a href={rfcHref(id)}>
+                    <code>{id}</code>
+                  </a>
+                  <div class="spec-title">{spec.title}</div>
+                </td>
+                <td>{spec.status}</td>
+                <td>{spec.implementation_status}</td>
+                <td>
+                  <a
+                    href={`https://github.com/${spec.target_repository}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {spec.target_repository}
+                  </a>
+                </td>
+                <td>
+                  <code>{spec.ci_status}</code>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel panel-pad">
+    <h2>Thresholds (RFC-NVS-GOV-0001)</h2>
+    <table class="threshold-table">
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">Target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Broken Link Ratio</td>
+          <td>0%</td>
+        </tr>
+        <tr>
+          <td>Unresolved Supersessions</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>SSOT Compliance Rate</td>
+          <td>100%</td>
+        </tr>
+        <tr>
+          <td>Artifact Freshness</td>
+          <td>&lt; 24 hours</td>
+        </tr>
+        <tr>
+          <td>Open Exception Drift</td>
+          <td>0 overdue</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel panel-pad">
+    <h2>Integration contract</h2>
+    <p>
+      Manual edits to <code>compliance/index.json</code> are not authoritative. Future CI
+      compiles this artifact after tests and publishes it with the static site. Related
+      machine APIs:
+    </p>
+    <div class="btn-row">
+      <a class="btn" href="/compliance/index.json">Open index.json</a>
+      <a class="btn" href="/rfc/RFC-NVS-GOV-0001">Governance spec</a>
+      <a class="btn" href="/api/v1/rfc.json">RFC API</a>
+      <a class="btn" href="/api/v1/graph/metadata.json">Graph metadata</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .source-note {
+    margin: 0 0 var(--space-4);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .widget-grid {
+    display: grid;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  @media (min-width: 720px) {
+    .widget-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .widget.wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .widget-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .widget.wide {
+      grid-column: span 4;
+    }
+  }
+
+  .widget h2,
+  section h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  section h2 {
+    font-size: 1rem;
+    text-transform: none;
+    letter-spacing: -0.01em;
+    color: var(--color-text);
+  }
+
+  .metric {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .metric.small {
+    font-size: 1.1rem;
+    word-break: break-all;
+  }
+
+  .hint,
+  .section-lede,
+  section p {
+    margin: 0.35rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .section-lede {
+    margin: 0 0 var(--space-4);
+    max-width: 48rem;
+  }
+
+  section {
+    margin-bottom: var(--space-4);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  th,
+  td {
+    padding: 0.7rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    background: var(--color-surface-2);
+  }
+
+  .spec-title {
+    margin-top: 0.2rem;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+  }
+
+  .threshold-table {
+    margin-top: var(--space-3);
+  }
+</style>

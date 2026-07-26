@@ -1,0 +1,17 @@
+Copyright © GemminAI / Gemmina Intelligence LLC.
+
+SensOS Developer Portal documentation and specification text in this repository
+are provided for ecosystem interoperability and implementation guidance.
+
+Unless a file states otherwise:
+
+1. You may read, copy, and reference these documents for the purpose of
+   implementing or reviewing SensOS-compatible systems.
+2. You must retain copyright and attribution notices.
+3. This documentation is provided "AS IS", without warranty of any kind.
+
+Runtime source code lives in separate GemminAI repositories and may carry
+different licenses. Consult each repository for its authoritative terms.
+
+Trademark and product names (including SensOS, HEKB, NVS, and GemminAI) remain
+the property of their respective owners.

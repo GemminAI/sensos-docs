@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page not found"
+  description="The requested SensOS documentation page could not be found."
+  noindex={true}
+>
+  <header class="page-header">
+    <p class="eyebrow">HTTP 404</p>
+    <h1>Page not found</h1>
+    <p class="lede">
+      The path you requested is not part of the SensOS Developer Portal. It may have
+      been renamed, or the URL may contain a typo.
+    </p>
+  </header>
+
+  <section class="panel panel-pad">
+    <h2>Continue here</h2>
+    <ul>
+      <li><a href="/">Home</a> — portal overview and latest RFCs</li>
+      <li><a href="/rfc">RFC Index</a> — normative specifications</li>
+      <li><a href="/search">Search</a> — find RFCs, products, and pages</li>
+      <li><a href="/architecture">Architecture</a> — stack and L0–L7 layers</li>
+      <li><a href="/graph">Graph Explorer</a> — semantic navigation</li>
+      <li><a href="/developer">Developer Guide</a> — contribution workflow</li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.05rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+</style>

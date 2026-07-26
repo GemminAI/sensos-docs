@@ -1,0 +1,180 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
+import LayerGraph from '../../components/graph/LayerGraph.astro';
+import { graphPageHref } from '../../lib/graph';
+
+const architectureGraphHref = graphPageHref({ view: 'architecture' });
+---
+
+<BaseLayout
+  title="Architecture"
+  description="SensOS architecture stack from external sources through SDRP to applications."
+>
+  <header class="page-header">
+    <p class="eyebrow">System Topology</p>
+    <h1>Architecture</h1>
+    <p>
+      SensOS is an observation-centered runtime platform. Constitutional rules
+      live in the RFC series; this page maps those norms onto the executable stack.
+    </p>
+    <div class="btn-row" style="margin-top: 1rem;">
+      <a class="btn btn-primary" href={architectureGraphHref}>View Architecture Graph →</a>
+      <a class="btn" href="/graph">Graph Explorer</a>
+      <a class="btn" href="/repositories">Repositories</a>
+    </div>
+  </header>
+
+  <LayerGraph />
+
+  <section aria-labelledby="stack-heading">
+    <h2 id="stack-heading">Normative stack</h2>
+    <p class="section-lede">
+      Data and control flow move downward from external observation sources to
+      applications. Each band has a governing specification.
+    </p>
+    <ArchitectureDiagram />
+  </section>
+
+  <section class="bands" aria-labelledby="bands-heading">
+    <h2 id="bands-heading">Responsibility bands</h2>
+    <div class="table-wrap panel">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Band</th>
+            <th scope="col">Concern</th>
+            <th scope="col">Governing RFCs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>External Sources</td>
+            <td>Sensors, streams, agents, and inbound APIs</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Observation Runtime</td>
+            <td>Ingress, normalization, L0–L1 observation objects</td>
+            <td><a href="/rfc/RFC-NVS-0200">RFC-NVS-0200</a></td>
+          </tr>
+          <tr>
+            <td>HEXT</td>
+            <td>Canonical object model after L3</td>
+            <td><a href="/rfc/RFC-NVS-0200">RFC-NVS-0200</a></td>
+          </tr>
+          <tr>
+            <td>HEKB</td>
+            <td>Immutable knowledge substrate and audit evidence</td>
+            <td><a href="/products/hekb">HEKB</a></td>
+          </tr>
+          <tr>
+            <td>NVS Kernel</td>
+            <td>Geometry, belief, and risk evaluation</td>
+            <td><a href="/products/nvs-kernel">NVS Kernel</a></td>
+          </tr>
+          <tr>
+            <td>DLNP</td>
+            <td>Layer negotiation and pipeline binding</td>
+            <td><a href="/rfc/RFC-NVS-0201">RFC-NVS-0201</a></td>
+          </tr>
+          <tr>
+            <td>Runtime Governance</td>
+            <td>Admission, budgets, cancellation, audit</td>
+            <td><a href="/rfc/RFC-NVS-0202">RFC-NVS-0202</a></td>
+          </tr>
+          <tr>
+            <td>SDRP</td>
+            <td>Distributed mesh, attestation, remote ports</td>
+            <td><a href="/rfc/RFC-NVS-0203">RFC-NVS-0203</a></td>
+          </tr>
+          <tr>
+            <td>Applications</td>
+            <td>Products and integrations consuming the runtime</td>
+            <td><a href="/products">Products</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="pillars-heading">
+    <h2 id="pillars-heading">Design pillars</h2>
+    <ol class="pillars">
+      <li><strong>Observation before meaning</strong> — wire observations without forcing taxonomy at the edge.</li>
+      <li><strong>Capability before execution</strong> — CBAC authorizes every privileged DLNP/SDRP action.</li>
+      <li><strong>Canonicalization before identity</strong> — stable <code>content_id</code> exists only after L3.</li>
+      <li><strong>Evidence before inference</strong> — audit objects record authorization lineage without raw tokens.</li>
+      <li><strong>Specification before implementation</strong> — see <a href="/rfc/RFC-NVS-GOV-0001">RFC-NVS-GOV-0001</a>.</li>
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  h2 {
+    margin: var(--space-6) 0 var(--space-3);
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    letter-spacing: -0.02em;
+  }
+
+  .section-lede {
+    margin: 0 0 var(--space-4);
+    color: var(--color-text-muted);
+    max-width: 48rem;
+    font-size: 1.02rem;
+    line-height: 1.65;
+  }
+
+  .page-header p {
+    font-size: 1.02rem;
+    line-height: 1.65;
+  }
+
+  @media (max-width: 640px) {
+    .table-wrap {
+      margin-inline: -0.25rem;
+    }
+
+    th,
+    td {
+      padding: 0.65rem 0.7rem;
+      font-size: 0.85rem;
+    }
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  th,
+  td {
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    background: var(--color-surface-2);
+  }
+
+  .pillars {
+    margin: 0;
+    padding-left: 1.2rem;
+    max-width: 48rem;
+  }
+
+  .pillars li {
+    margin-bottom: 0.65rem;
+  }
+</style>

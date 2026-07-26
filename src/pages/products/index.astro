@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PRODUCTS } from '../../lib/site';
+---
+
+<BaseLayout
+  title="Products"
+  description="Canonical SensOS product identities and documentation entry points."
+>
+  <header class="page-header">
+    <p class="eyebrow">Ecosystem</p>
+    <h1>Products</h1>
+    <p>
+      Canonical product identities for the SensOS ecosystem. Each card links to
+      product documentation. Machine feed:
+      <a href="/api/v1/products.json"><code>/api/v1/products.json</code></a>.
+    </p>
+  </header>
+
+  <div class="product-grid">
+    {
+      PRODUCTS.map((product) => (
+        <a class="product-card panel panel-pad" href={product.docsHref}>
+          <div class="product-top">
+            <h2>{product.name}</h2>
+            <span class="status-pill status-active">{product.status}</span>
+          </div>
+          <p>{product.summary}</p>
+          <p class="repo">
+            <code>{product.repository}</code>
+          </p>
+        </a>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .product-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 720px) {
+    .product-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .product-card {
+    text-decoration: none;
+    color: inherit;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .product-card:hover {
+    border-color: var(--color-accent);
+  }
+
+  .product-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .product-card h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .product-card p {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .repo code {
+    font-size: 0.8rem;
+  }
+</style>

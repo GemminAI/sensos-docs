@@ -1,0 +1,79 @@
+{
+  "$schema": "https://sensos.org/schemas/compliance-v1.json",
+  "schema_version": "1.0.0",
+  "api_version": "1.0",
+  "generated_at": "2026-07-26T14:00:00Z",
+  "environment": "developer-preview",
+  "health_metrics": {
+    "total_rfcs": 6,
+    "broken_links": 0,
+    "unresolved_supersessions": 0,
+    "normative_clauses_count": null,
+    "ssot_compliance_rate": "Preview",
+    "compliance_rate": "Preview",
+    "ci_status": "BUILD_OK",
+    "audit_passed": null,
+    "artifact_freshness_hours": null,
+    "notes": "v0.1 Developer Preview — metrics are structural placeholders until rfc-auditor CI lands."
+  },
+  "specifications": {
+    "RFC-NVS-GOV-0001": {
+      "title": "SensOS Ecosystem Master Governance Specification",
+      "category": "RFC-NVS-GOV",
+      "status": "Normative Governance Specification",
+      "implementation_status": "Documented",
+      "target_repository": "GemminAI/sensos-docs",
+      "ci_status": "BUILD_OK",
+      "canonical_url": "https://sensos.org/rfc/RFC-NVS-GOV-0001"
+    },
+    "RFC-NVS-0199": {
+      "title": "NVS Capability-Based Access Control",
+      "category": "Security",
+      "status": "Proposed",
+      "implementation_status": "Specified",
+      "target_repository": "GemminAI/nvs-runtime",
+      "ci_status": "PLACEHOLDER",
+      "canonical_url": "https://sensos.org/rfc/RFC-NVS-0199"
+    },
+    "RFC-NVS-0200": {
+      "title": "NVS Model Context Protocol and Layer-Port ABI",
+      "category": "Architecture",
+      "status": "Proposed",
+      "implementation_status": "Specified",
+      "target_repository": "GemminAI/nvs-runtime",
+      "ci_status": "PLACEHOLDER",
+      "canonical_url": "https://sensos.org/rfc/RFC-NVS-0200"
+    },
+    "RFC-NVS-0201": {
+      "title": "Dynamic Layer Negotiation Protocol",
+      "category": "Protocol",
+      "status": "Proposed",
+      "implementation_status": "Specified",
+      "target_repository": "GemminAI/nvs-runtime",
+      "ci_status": "PLACEHOLDER",
+      "canonical_url": "https://sensos.org/rfc/RFC-NVS-0201"
+    },
+    "RFC-NVS-0202": {
+      "title": "SensOS Runtime Governance and Resource Management",
+      "category": "Operations",
+      "status": "Proposed",
+      "implementation_status": "Specified",
+      "target_repository": "GemminAI/nvs-runtime",
+      "ci_status": "PLACEHOLDER",
+      "canonical_url": "https://sensos.org/rfc/RFC-NVS-0202"
+    },
+    "RFC-NVS-0203": {
+      "title": "SensOS Distributed Runtime Protocol",
+      "category": "Protocol",
+      "status": "Proposed",
+      "implementation_status": "Specified",
+      "target_repository": "GemminAI/nvs-runtime",
+      "ci_status": "PLACEHOLDER",
+      "canonical_url": "https://sensos.org/rfc/RFC-NVS-0203"
+    }
+  },
+  "notes": [
+    "v0.1 Developer Preview dashboard.",
+    "Manual edits to this file are not authoritative; future CI (rfc-auditor) will overwrite it."
+  ]
+}

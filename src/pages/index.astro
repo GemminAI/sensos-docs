@@ -1,0 +1,431 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatDate, getAllRfcs, rfcHref, statusClass } from '../lib/rfc';
+import { PRODUCTS, SITE } from '../lib/site';
+
+const rfcs = await getAllRfcs();
+const latestRfcs = [...rfcs].sort(
+  (a, b) => b.data.updated.valueOf() - a.data.updated.valueOf() || b.id.localeCompare(a.id),
+);
+
+const principles = [
+  {
+    title: 'Specification before implementation',
+    body: 'Public interfaces and ABIs are governed by Active or Standard RFCs before merge to main.',
+  },
+  {
+    title: 'Canonical documentation over duplication',
+    body: 'sensos.org is the SSOT. Repository READMEs point here instead of forking normative text.',
+  },
+  {
+    title: 'Capability before execution',
+    body: 'CBAC authorizes privileged DLNP and SDRP actions; raw tokens never enter HEKB.',
+  },
+  {
+    title: 'Canonicalization before identity',
+    body: 'Stable content_id exists only after L3 HEXT canonicalization.',
+  },
+  {
+    title: 'Evidence before inference',
+    body: 'Runtime governance records authorization lineage and partial outcomes as immutable objects.',
+  },
+];
+
+const resources = [
+  { href: '/developer', title: 'Developer Guide', body: 'Local build, RFC frontmatter, contribution workflow.' },
+  { href: '/rfc', title: 'RFC Index', body: 'Normative and procedural specifications with lifecycle metadata.' },
+  { href: '/architecture', title: 'Architecture', body: 'Stack diagram and interactive L0–L7 layer graph.' },
+  { href: '/graph', title: 'Graph Explorer', body: 'Semantic navigation across RFCs, repos, layers, and components.' },
+  { href: '/governance', title: 'Governance', body: 'RFC-NVS-GOV-0001 principles, workflow, and change control.' },
+  { href: '/compliance', title: 'Compliance', body: 'Health metrics dashboard backed by compliance/index.json.' },
+];
+
+const quickLinks = [
+  { href: '/rfc', label: 'Documentation · RFC' },
+  { href: '/graph', label: 'Graph Explorer' },
+  { href: '/compliance', label: 'Compliance' },
+  { href: SITE.repo, label: 'GitHub', external: true },
+  { href: '/api/v1/rfc.json', label: 'API · RFC JSON' },
+  { href: '/api/v1/graph/metadata.json', label: 'API · Graph metadata' },
+  { href: '/repositories', label: 'Repositories' },
+  { href: '/search', label: 'Search' },
+];
+---
+
+<BaseLayout title="Home" description={SITE.description}>
+  <header class="page-header home-header">
+    <p class="eyebrow">Official Documentation · v{SITE.version} {SITE.channel}</p>
+    <h1>SensOS Developer Portal</h1>
+    <p class="lede">
+      Canonical specifications, architecture contracts, and machine-readable indexes
+      for the SensOS ecosystem. Written for implementers, reviewers, and tooling.
+    </p>
+    <div class="btn-row" style="margin-top: 1.25rem;">
+      <a class="btn btn-primary" href="/rfc">Browse RFCs</a>
+      <a class="btn" href="/architecture">Architecture</a>
+      <a class="btn" href="/graph">Graph Explorer</a>
+      <a class="btn" href="/developer">Developer Guide</a>
+    </div>
+  </header>
+
+  <section class="home-section" aria-labelledby="mission-heading">
+    <h2 id="mission-heading">Mission</h2>
+    <p>
+      Maintain a single, auditable source of truth for SensOS interfaces so runtimes,
+      kernels, knowledge substrates, and agents can interoperate without informal drift.
+      This portal publishes normative text and indexes — not product marketing.
+    </p>
+  </section>
+
+  <section class="home-section" aria-labelledby="what-heading">
+    <h2 id="what-heading">What is SensOS?</h2>
+    <p>
+      SensOS is an observation-centered runtime platform. External streams enter an
+      observation runtime, are canonicalized into HEXT, persisted through HEKB, evaluated
+      by the NVS Kernel, negotiated via DLNP, governed at runtime, and distributed over SDRP
+      to applications. Authority for those contracts lives in the RFC series.
+    </p>
+    <div class="panel panel-pad scope-panel">
+      <table class="scope-table">
+        <thead>
+          <tr>
+            <th scope="col">In scope</th>
+            <th scope="col">Out of scope</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>RFC Series (SSOT)</td>
+            <td>Runtime implementation source trees</td>
+          </tr>
+          <tr>
+            <td>Architecture & ABI contracts</td>
+            <td>Product marketing pages</td>
+          </tr>
+          <tr>
+            <td>Governance & compliance indexes</td>
+            <td>Vendor sales content</td>
+          </tr>
+          <tr>
+            <td>Developer contribution guidance</td>
+            <td>Proprietary customer deployments</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="home-section" aria-labelledby="principles-heading">
+    <h2 id="principles-heading">Core Principles</h2>
+    <ol class="principles">
+      {
+        principles.map((item) => (
+          <li>
+            <strong>{item.title}</strong>
+            <span>{item.body}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="home-section" aria-labelledby="arch-heading">
+    <h2 id="arch-heading">Architecture Overview</h2>
+    <p>
+      Data and control flow move from external sources through observation, HEXT/HEKB,
+      kernel evaluation, negotiation, governance, and distributed runtime surfaces.
+    </p>
+    <pre class="arch-flow" aria-label="Architecture stack"><code>External Sources
+→ Observation Runtime
+→ HEXT
+→ HEKB
+→ NVS Kernel
+→ DLNP
+→ Runtime Governance
+→ SDRP
+→ Applications</code></pre>
+    <div class="btn-row">
+      <a class="btn" href="/architecture">Open Architecture</a>
+      <a class="btn" href="/architecture#l0">Interactive Layer Graph (L0–L7)</a>
+    </div>
+  </section>
+
+  <section class="home-section" aria-labelledby="resources-heading">
+    <h2 id="resources-heading">Developer Resources</h2>
+    <div class="card-grid">
+      {
+        resources.map((item) => (
+          <a class="panel panel-pad home-card" href={item.href}>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="home-section" aria-labelledby="latest-rfc-heading">
+    <h2 id="latest-rfc-heading">Latest RFCs</h2>
+    <div class="table-wrap panel">
+      <table class="rfc-mini">
+        <thead>
+          <tr>
+            <th scope="col">RFC ID</th>
+            <th scope="col">Title</th>
+            <th scope="col">Status</th>
+            <th scope="col">Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            latestRfcs.map((rfc) => (
+              <tr>
+                <td>
+                  <a href={rfcHref(rfc.id)}>
+                    <code>{rfc.id}</code>
+                  </a>
+                </td>
+                <td>
+                  <a href={rfcHref(rfc.id)}>{rfc.data.title}</a>
+                </td>
+                <td>
+                  <span class:list={['status-pill', statusClass(rfc.data.status)]}>
+                    {rfc.data.status}
+                  </span>
+                </td>
+                <td>{formatDate(rfc.data.updated)}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="section-foot">
+      <a href="/rfc">Full RFC index →</a>
+    </p>
+  </section>
+
+  <section class="home-section" aria-labelledby="products-heading">
+    <h2 id="products-heading">Products</h2>
+    <div class="card-grid products">
+      {
+        PRODUCTS.map((product) => (
+          <a class="panel panel-pad home-card" href={product.docsHref}>
+            <div class="product-top">
+              <h3>{product.name}</h3>
+              <span class="status-pill status-active">{product.status}</span>
+            </div>
+            <p>{product.summary}</p>
+            <code>{product.repository}</code>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="home-section" aria-labelledby="quick-heading">
+    <h2 id="quick-heading">Quick Links</h2>
+    <ul class="quick-links">
+      {
+        quickLinks.map((link) => (
+          <li>
+            {'external' in link && link.external ? (
+              <a href={link.href} target="_blank" rel="noopener noreferrer">
+                {link.label}
+              </a>
+            ) : (
+              <a href={link.href}>{link.label}</a>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .home-section {
+    margin-bottom: var(--space-7);
+  }
+
+  .home-section > h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+  }
+
+  .home-section > p {
+    margin: 0 0 var(--space-4);
+    max-width: 48rem;
+    color: var(--color-text-muted);
+  }
+
+  .scope-panel {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .scope-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .scope-table th,
+  .scope-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .scope-table th {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--color-surface-2);
+  }
+
+  .principles {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .principles li {
+    display: grid;
+    gap: 0.25rem;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  .principles span {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+  }
+
+  .arch-flow {
+    margin: 0 0 var(--space-4);
+    max-width: 36rem;
+  }
+
+  .card-grid {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 720px) {
+    .card-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card-grid.products {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .card-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .home-card {
+    text-decoration: none;
+    color: inherit;
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .home-card:hover {
+    border-color: var(--color-accent);
+  }
+
+  .home-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .home-card p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.92rem;
+  }
+
+  .product-top {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .rfc-mini {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .rfc-mini th,
+  .rfc-mini td {
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .rfc-mini th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    background: var(--color-surface-2);
+  }
+
+  .section-foot {
+    margin: var(--space-3) 0 0;
+  }
+
+  .quick-links {
+    display: grid;
+    gap: 0.5rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 640px) {
+    .quick-links {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 960px) {
+    .quick-links {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .quick-links a {
+    display: block;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .quick-links a:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+</style>

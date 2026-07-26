@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PRODUCTS } from '../../lib/site';
+
+export function getStaticPaths() {
+  return PRODUCTS.map((product) => ({
+    params: { slug: product.slug },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+
+const governing: Record<string, { id: string; title: string }[]> = {
+  sensos: [
+    { id: 'RFC-NVS-GOV-0001', title: 'Master Governance Specification' },
+    { id: 'RFC-NVS-0200', title: 'L-Port and L-ABI' },
+    { id: 'RFC-NVS-0201', title: 'DLNP' },
+  ],
+  hekb: [
+    { id: 'RFC-NVS-0200', title: 'L-Port and L-ABI' },
+    { id: 'RFC-NVS-0202', title: 'Runtime Governance' },
+  ],
+  'nvs-kernel': [
+    { id: 'RFC-NVS-0200', title: 'L-Port and L-ABI' },
+    { id: 'RFC-NVS-0199', title: 'CBAC' },
+  ],
+  'nvs-runtime': [
+    { id: 'RFC-NVS-0199', title: 'CBAC' },
+    { id: 'RFC-NVS-0201', title: 'DLNP' },
+    { id: 'RFC-NVS-0202', title: 'Runtime Governance' },
+    { id: 'RFC-NVS-0203', title: 'SDRP' },
+  ],
+};
+
+const rfcs = governing[product.slug] ?? [];
+---
+
+<BaseLayout title={product.name} description={product.summary}>
+  <header class="page-header">
+    <p class="eyebrow">Product Documentation</p>
+    <h1>{product.name}</h1>
+    <p>{product.summary}</p>
+  </header>
+
+  <section class="panel panel-pad">
+    <dl class="meta-list">
+      <div>
+        <dt>Status</dt>
+        <dd><span class="status-pill status-active">{product.status}</span></dd>
+      </div>
+      <div>
+        <dt>Repository</dt>
+        <dd>
+          <a
+            href={`https://github.com/${product.repository}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {product.repository}
+          </a>
+        </dd>
+      </div>
+      <div>
+        <dt>API identity</dt>
+        <dd><code>/api/v1/products.json#{product.slug}</code></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Governing RFCs</h2>
+    <ul>
+      {
+        rfcs.map((rfc) => (
+          <li>
+            <a href={`/rfc/${rfc.id}/`}>
+              {rfc.id}
+            </a>
+            — {rfc.title}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section>
+    <h2>Documentation notes</h2>
+    <p class="muted">
+      Implementation sources remain in the product repository. This portal
+      publishes contracts, identities, and compliance references only.
+    </p>
+    <div class="btn-row">
+      <a class="btn" href="/products">All products</a>
+      <a class="btn" href="/architecture">Architecture</a>
+      <a
+        class="btn btn-primary"
+        href={`https://github.com/${product.repository}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Open repository
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  section {
+    margin-top: var(--space-5);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.15rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  li {
+    margin-bottom: 0.45rem;
+  }
+
+  .muted {
+    color: var(--color-text-muted);
+  }
+</style>

@@ -1,0 +1,186 @@
+---
+import { getGraphProvider, graphPageHref } from '../../lib/graph';
+
+interface Props {
+  rfcId: string;
+}
+
+const { rfcId } = Astro.props;
+const provider = await getGraphProvider();
+const node = await provider.getNode(rfcId);
+const neighbors = node ? await provider.getNeighbors(rfcId) : [];
+
+const references = neighbors
+  .filter((item) => item.direction === 'outgoing')
+  .filter((item) => ['references', 'depends_on', 'derived_from'].includes(String(item.edge.type)));
+
+const referencedBy = neighbors
+  .filter((item) => item.direction === 'incoming')
+  .filter((item) =>
+    ['references', 'depends_on', 'implements', 'derived_from'].includes(String(item.edge.type)),
+  );
+
+const relatedComponents = [
+  ...(node?.relatedComponents ?? []),
+  ...neighbors.filter((item) => item.node.type === 'component').map((item) => item.node.id),
+].filter((id, index, arr) => arr.indexOf(id) === index);
+
+const relatedRepositories = [
+  ...(node?.repository ? [node.repository] : []),
+  ...neighbors.filter((item) => item.node.type === 'repository').map((item) => item.node.id),
+].filter((id, index, arr) => arr.indexOf(id) === index);
+
+const graphHref = graphPageHref({ rfc: rfcId, node: rfcId, view: 'rfc' });
+---
+
+<section class="rfc-graph panel panel-pad" aria-label="Graph relationships">
+  <div class="header">
+    <div>
+      <p class="eyebrow">Knowledge Graph</p>
+      <h2>Semantic relationships</h2>
+      <p class="muted">Resolved via GraphProvider (current: GraphifyProvider + seed catalog).</p>
+    </div>
+    <a class="btn btn-primary" href={graphHref}>Open in Graph →</a>
+  </div>
+
+  <div class="grid">
+    <div>
+      <h3>References</h3>
+      <ul>
+        {
+          references.length ? (
+            references.map((item) => (
+              <li>
+                <span class="rel">{item.edge.type}</span>
+                <a href={graphPageHref({ node: item.node.id })}>{item.node.id}</a>
+                <span class="muted">— {item.node.title}</span>
+              </li>
+            ))
+          ) : (
+            <li class="muted">No outbound references in the current graph.</li>
+          )
+        }
+      </ul>
+    </div>
+
+    <div>
+      <h3>Referenced By</h3>
+      <ul>
+        {
+          referencedBy.length ? (
+            referencedBy.map((item) => (
+              <li>
+                <span class="rel">{item.edge.type}</span>
+                <a href={graphPageHref({ node: item.node.id })}>{item.node.id}</a>
+                <span class="muted">— {item.node.title}</span>
+              </li>
+            ))
+          ) : (
+            <li class="muted">No inbound references in the current graph.</li>
+          )
+        }
+      </ul>
+    </div>
+
+    <div>
+      <h3>Related Components</h3>
+      <ul>
+        {
+          relatedComponents.length ? (
+            relatedComponents.map((id) => (
+              <li>
+                <a href={graphPageHref({ node: id })}>{id}</a>
+              </li>
+            ))
+          ) : (
+            <li class="muted">—</li>
+          )
+        }
+      </ul>
+    </div>
+
+    <div>
+      <h3>Related Repositories</h3>
+      <ul>
+        {
+          relatedRepositories.length ? (
+            relatedRepositories.map((id) => {
+              const slug = id.includes('/') ? id.split('/')[1] : id;
+              return (
+                <li>
+                  <a href={`/repositories/${slug}`}>{id}</a>
+                </li>
+              );
+            })
+          ) : (
+            <li class="muted">—</li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .eyebrow {
+    margin: 0 0 var(--space-2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  h3 {
+    margin: 0 0 var(--space-2);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 800px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  li {
+    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+  }
+
+  .rel {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    margin-right: 0.35rem;
+  }
+
+  .muted {
+    color: var(--color-text-muted);
+  }
+</style>

@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Governance"
+  description="SensOS governance principles, RFC workflow, editorial process, and change control."
+>
+  <header class="page-header">
+    <p class="eyebrow">Ecosystem Constitution</p>
+    <h1>Governance</h1>
+    <p>
+      Operational rules for specifications, reviews, and compliance across the
+      SensOS ecosystem. Canonical document:
+      <a href="/rfc/RFC-NVS-GOV-0001">RFC-NVS-GOV-0001</a>.
+    </p>
+  </header>
+
+  <section class="gov-hero panel panel-pad">
+    <p class="eyebrow">Primary Specification</p>
+    <h2><a href="/rfc/RFC-NVS-GOV-0001">RFC-NVS-GOV-0001</a></h2>
+    <p>
+      SensOS Ecosystem Master Governance Specification & Operational Framework
+      (v1.4.0) — Normative Governance Specification (SSOT).
+    </p>
+    <a class="btn btn-primary" href="/rfc/RFC-NVS-GOV-0001">Read full specification</a>
+  </section>
+
+  <div class="gov-grid">
+    <section class="panel panel-pad">
+      <h2>Governance Principles</h2>
+      <ol>
+        <li>Specification before implementation</li>
+        <li>Canonical documentation over duplicated documentation</li>
+        <li>Deterministic governance over ad hoc decisions</li>
+        <li>Automated verification over manual assertion</li>
+        <li>Backward compatibility unless explicitly superseded</li>
+      </ol>
+    </section>
+
+    <section class="panel panel-pad">
+      <h2>RFC Workflow</h2>
+      <ol>
+        <li>Proposal (PR / Draft RFC)</li>
+        <li>Editorial Review</li>
+        <li>Technical Review</li>
+        <li>CI Validation</li>
+        <li>Portal Publication</li>
+      </ol>
+    </section>
+
+    <section class="panel panel-pad">
+      <h2>Editorial Process</h2>
+      <ul>
+        <li>Layer 0 metadata verification</li>
+        <li>RFC 2119 keyword compliance</li>
+        <li>Formatting and supersession links</li>
+        <li>Minimum one Editorial Board approval</li>
+      </ul>
+    </section>
+
+    <section class="panel panel-pad">
+      <h2>Change Control</h2>
+      <ul>
+        <li>No production ABI change without Active/Standard RFC</li>
+        <li>Temporary drift exceptions ≤ 14 days with dual approval</li>
+        <li>CI-generated compliance artifacts only</li>
+        <li>Public <code>/v1</code> contracts remain backward compatible unless superseded</li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .gov-hero {
+    margin-bottom: var(--space-5);
+  }
+
+  .gov-hero h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.35rem;
+  }
+
+  .gov-hero p {
+    color: var(--color-text-muted);
+    max-width: 48rem;
+  }
+
+  .gov-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 800px) {
+    .gov-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .gov-grid h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.05rem;
+  }
+
+  ol,
+  ul {
+    margin: 0;
+    padding-left: 1.15rem;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+  }
+</style>

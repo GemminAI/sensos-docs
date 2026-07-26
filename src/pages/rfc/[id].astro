@@ -1,0 +1,230 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RfcGraphRelations from '../../components/graph/RfcGraphRelations.astro';
+import {
+  adjacentRfcs,
+  formatDate,
+  getAllRfcs,
+  rfcHref,
+  statusClass,
+} from '../../lib/rfc';
+import { SITE } from '../../lib/site';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const rfcs = await getAllRfcs();
+  return rfcs.map((rfc) => ({
+    params: { id: rfc.id },
+    props: { rfc },
+  }));
+}
+
+const { rfc } = Astro.props;
+const rfcs = await getAllRfcs();
+const { Content } = await render(rfc);
+const { prev, next } = adjacentRfcs(rfcs, rfc.id);
+const editHref = `${SITE.editBase}/rfc/${rfc.id}.md`;
+const downloadMdHref = `${SITE.repo}/raw/main/docs/rfc/${rfc.id}.md`;
+---
+
+<BaseLayout title={rfc.id} description={`${rfc.id}: ${rfc.data.title}`}>
+  <article class="rfc-page">
+    <header class="page-header">
+      <p class="eyebrow">RFC Document</p>
+      <h1>{rfc.id}</h1>
+      <p class="rfc-title">{rfc.data.title}</p>
+      <div class="btn-row" style="margin-top: 1rem;">
+        <a class="btn" href={editHref} target="_blank" rel="noopener noreferrer">
+          Edit on GitHub
+        </a>
+        <a class="btn" href={downloadMdHref} target="_blank" rel="noopener noreferrer">
+          Download Markdown
+        </a>
+        <button class="btn" type="button" disabled aria-disabled="true" title="PDF export coming soon">
+          Download PDF
+        </button>
+      </div>
+    </header>
+
+    <section class="panel panel-pad rfc-meta" aria-label="RFC metadata">
+      <dl class="meta-list">
+        <div>
+          <dt>Status</dt>
+          <dd>
+            <span class:list={['status-pill', statusClass(rfc.data.status)]}>
+              {rfc.data.status}
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt>Category</dt>
+          <dd>{rfc.data.category}</dd>
+        </div>
+        <div>
+          <dt>Version</dt>
+          <dd><code>{rfc.data.version}</code></dd>
+        </div>
+        <div>
+          <dt>Last Updated</dt>
+          <dd>{formatDate(rfc.data.updated)}</dd>
+        </div>
+        <div>
+          <dt>Repository</dt>
+          <dd>
+            <a
+              href={`https://github.com/${rfc.data.repository}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {rfc.data.repository}
+            </a>
+          </dd>
+        </div>
+        <div>
+          <dt>Supersedes</dt>
+          <dd>
+            {
+              rfc.data.supersedes.length ? (
+                rfc.data.supersedes.map((id, i) => (
+                  <>
+                    {i > 0 && ', '}
+                    <a href={rfcHref(id)}>{id}</a>
+                  </>
+                ))
+              ) : (
+                <span class="muted">—</span>
+              )
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>Superseded By</dt>
+          <dd>
+            {
+              rfc.data.superseded_by.length ? (
+                rfc.data.superseded_by.map((id, i) => (
+                  <>
+                    {i > 0 && ', '}
+                    <a href={rfcHref(id)}>{id}</a>
+                  </>
+                ))
+              ) : (
+                <span class="muted">—</span>
+              )
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>Related RFCs</dt>
+          <dd>
+            {
+              rfc.data.related.length ? (
+                rfc.data.related.map((id, i) => (
+                  <>
+                    {i > 0 && ', '}
+                    <a href={rfcHref(id)}>{id}</a>
+                  </>
+                ))
+              ) : (
+                <span class="muted">—</span>
+              )
+            }
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <RfcGraphRelations rfcId={rfc.id} />
+
+    <div class="prose rfc-body">
+      <Content />
+    </div>
+
+    <nav class="rfc-nav panel panel-pad" aria-label="Adjacent RFCs">
+      <div>
+        {
+          prev ? (
+            <a href={rfcHref(prev.id)}>
+              <span class="nav-label">Previous</span>
+              <span class="nav-id">{prev.id}</span>
+              <span class="nav-title">{prev.data.title}</span>
+            </a>
+          ) : (
+            <span class="muted">No previous RFC</span>
+          )
+        }
+      </div>
+      <div class="nav-next">
+        {
+          next ? (
+            <a href={rfcHref(next.id)}>
+              <span class="nav-label">Next</span>
+              <span class="nav-id">{next.id}</span>
+              <span class="nav-title">{next.data.title}</span>
+            </a>
+          ) : (
+            <span class="muted">No next RFC</span>
+          )
+        }
+      </div>
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .rfc-title {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+  }
+
+  .rfc-meta {
+    margin-bottom: var(--space-6);
+  }
+
+  .rfc-body {
+    margin-bottom: var(--space-6);
+  }
+
+  .muted {
+    color: var(--color-text-muted);
+  }
+
+  .rfc-nav {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 720px) {
+    .rfc-nav {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .nav-next {
+      text-align: right;
+    }
+  }
+
+  .rfc-nav a {
+    display: grid;
+    gap: 0.2rem;
+    text-decoration: none;
+  }
+
+  .nav-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+  }
+
+  .nav-id {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .nav-title {
+    color: var(--color-text);
+  }
+</style>

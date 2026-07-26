@@ -1,0 +1,133 @@
+---
+import type { DetectedGraphArtifacts } from '../lib/graph';
+
+interface Props {
+  artifacts: DetectedGraphArtifacts;
+}
+
+const { artifacts } = Astro.props;
+
+const items = [
+  {
+    name: 'graph.json',
+    href: artifacts.urls.graphJson,
+    available: artifacts.graphJson,
+    description: 'Primary Graphify / portal graph document (nodes + edges).',
+  },
+  {
+    name: 'nodes.json',
+    href: artifacts.urls.nodesJson,
+    available: artifacts.nodesJson,
+    description: 'Optional node list for incremental or split publishes.',
+  },
+  {
+    name: 'edges.json',
+    href: artifacts.urls.edgesJson,
+    available: artifacts.edgesJson,
+    description: 'Optional edge list with relationship labels.',
+  },
+  {
+    name: 'metadata.json',
+    href: artifacts.urls.metadataJson,
+    available: artifacts.metadataJson,
+    description: 'Optional generation metadata for agents and CI.',
+  },
+  {
+    name: 'graph.html',
+    href: artifacts.urls.graphHtml,
+    available: artifacts.graphHtml,
+    description: 'Interactive Graphify visualization iframe target.',
+  },
+  {
+    name: 'GRAPH_REPORT.md',
+    href: artifacts.urls.report,
+    available: artifacts.report,
+    description: 'Human-readable Graphify report.',
+  },
+];
+---
+
+<section class="artifacts" aria-labelledby="artifacts-heading">
+  <h2 id="artifacts-heading">Artifacts</h2>
+  <p class="lede">
+    Discovered from <code>public/graph/</code> at build time. Missing files never
+    break the site — the seed catalog remains available through GraphProvider.
+  </p>
+
+  <ul class="artifact-list">
+    {
+      items.map((item) => (
+        <li class="panel panel-pad">
+          <div class="artifact-top">
+            <code>{item.name}</code>
+            <span class:list={['status-pill', item.available ? 'status-standard' : 'status-other']}>
+              {item.available ? 'Available' : 'Missing'}
+            </span>
+          </div>
+          <p>{item.description}</p>
+          {
+            item.available ? (
+              <a class="btn" href={item.href} download={item.name}>
+                Download {item.name}
+              </a>
+            ) : (
+              <span class="btn" aria-disabled="true">Unavailable</span>
+            )
+          }
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .artifacts h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .lede {
+    margin: 0 0 var(--space-4);
+    color: var(--color-text-muted);
+    max-width: 48rem;
+  }
+
+  .artifact-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 800px) {
+    .artifact-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .artifact-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .artifact-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  li p {
+    margin: 0 0 var(--space-3);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .btn[aria-disabled='true'] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+</style>

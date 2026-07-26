@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { REPOSITORIES, getGraphProvider, graphPageHref } from '../../lib/graph';
+import { PRODUCTS } from '../../lib/site';
+
+export function getStaticPaths() {
+  return REPOSITORIES.map((repo) => ({
+    params: { slug: repo.slug },
+    props: { repo },
+  }));
+}
+
+const { repo } = Astro.props;
+const provider = await getGraphProvider();
+const node = await provider.getNode(repo.id);
+const neighbors = node ? await provider.getNeighbors(repo.id) : [];
+
+const implementedRfcs = neighbors
+  .filter(
+    (item) =>
+      item.node.type === 'rfc' &&
+      (item.direction === 'outgoing' || String(item.edge.type) === 'implements'),
+  )
+  .map((item) => item.node);
+
+const dependencies = neighbors.filter(
+  (item) =>
+    item.direction === 'outgoing' &&
+    ['depends_on', 'references', 'consumes'].includes(String(item.edge.type)),
+);
+
+const relatedProducts = PRODUCTS.filter((product) => product.repository === repo.id);
+const graphHref = graphPageHref({ repo: repo.id, node: repo.id, view: 'repository' });
+---
+
+<BaseLayout title={repo.name} description={repo.overview}>
+  <header class="page-header">
+    <p class="eyebrow">Repository</p>
+    <h1>{repo.name}</h1>
+    <p><code>{repo.id}</code></p>
+    <div class="btn-row" style="margin-top: 1rem;">
+      <a class="btn btn-primary" href={graphHref}>Graph View →</a>
+      <a
+        class="btn"
+        href={`https://github.com/${repo.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+      <a class="btn" href="/repositories">All repositories</a>
+    </div>
+  </header>
+
+  <section class="panel panel-pad">
+    <h2>Overview</h2>
+    <p>{repo.overview}</p>
+  </section>
+
+  <section class="panel panel-pad">
+    <h2>Architecture</h2>
+    <p>{repo.architecture}</p>
+  </section>
+
+  <section class="panel panel-pad">
+    <h2>Implemented RFCs</h2>
+    <ul>
+      {
+        implementedRfcs.length ? (
+          implementedRfcs.map((rfc) => (
+            <li>
+              <a href={`/rfc/${rfc.id}`}>{rfc.id}</a> — {rfc.title}
+            </li>
+          ))
+        ) : (
+          <li class="muted">No implement edges in the current graph catalog.</li>
+        )
+      }
+    </ul>
+  </section>
+
+  <section class="panel panel-pad">
+    <h2>Dependencies</h2>
+    <ul>
+      {
+        dependencies.length ? (
+          dependencies.map((item) => (
+            <li>
+              <code>{item.edge.type}</code>
+              <a href={graphPageHref({ node: item.node.id })}>{item.node.id}</a>
+              — {item.node.title}
+            </li>
+          ))
+        ) : (
+          <li class="muted">No dependency edges recorded yet.</li>
+        )
+      }
+    </ul>
+  </section>
+
+  <section class="panel panel-pad">
+    <h2>Related Products</h2>
+    <ul>
+      {
+        relatedProducts.length ? (
+          relatedProducts.map((product) => (
+            <li>
+              <a href={product.docsHref}>{product.name}</a> — {product.summary}
+            </li>
+          ))
+        ) : (
+          <li class="muted">—</li>
+        )
+      }
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  section {
+    margin-bottom: var(--space-4);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.15rem;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+  }
+
+  .muted {
+    color: var(--color-text-muted);
+  }
+</style>

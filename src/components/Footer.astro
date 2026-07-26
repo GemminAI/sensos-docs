@@ -1,0 +1,124 @@
+---
+import { BUILD_TIME, SITE } from '../lib/site';
+
+const buildLabel = BUILD_TIME.slice(0, 19).replace('T', ' ') + ' UTC';
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <strong>{SITE.name}</strong>
+      <p>Official documentation SSOT for the SensOS ecosystem.</p>
+    </div>
+
+    <dl class="footer-meta" aria-label="Release metadata">
+      <div>
+        <dt>Documentation Version</dt>
+        <dd>v{SITE.version} · {SITE.channel}</dd>
+      </div>
+      <div>
+        <dt>Last Build</dt>
+        <dd><time datetime={BUILD_TIME}>{buildLabel}</time></dd>
+      </div>
+      <div>
+        <dt>License</dt>
+        <dd>
+          <a href={SITE.licenseUrl}>{SITE.licenseLabel}</a>
+        </dd>
+      </div>
+      <div>
+        <dt>GitHub</dt>
+        <dd>
+          <a href={SITE.repo} target="_blank" rel="noopener noreferrer">{SITE.repoPath}</a>
+        </dd>
+      </div>
+    </dl>
+
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/rfc">RFC</a>
+      <a href="/architecture">Architecture</a>
+      <a href="/products">Products</a>
+      <a href="/developer">Developer</a>
+      <a href="/governance">Governance</a>
+      <a href="/graph">Graph</a>
+      <a href="/compliance">Compliance</a>
+      <a href="/search">Search</a>
+      <a href={SITE.repo} target="_blank" rel="noopener noreferrer">GitHub</a>
+    </nav>
+
+    <p class="copyright">
+      {SITE.copyright} · {SITE.name} · Pure Information Laboratory
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .footer-inner {
+    width: min(100% - 2rem, var(--content-max));
+    margin-inline: auto;
+    padding: var(--space-6) 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .footer-brand p {
+    margin: 0.35rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .footer-meta {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 720px) {
+    .footer-meta {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer-meta {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .footer-meta > div {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .footer-meta dt {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  .footer-meta dd {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .copyright {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-4);
+  }
+</style>

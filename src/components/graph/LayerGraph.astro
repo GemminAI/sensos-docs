@@ -1,0 +1,164 @@
+---
+import { getGraphProvider, graphPageHref } from '../../lib/graph';
+
+const provider = await getGraphProvider();
+const layers = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7'] as const;
+
+const cards = await Promise.all(
+  layers.map(async (id) => {
+    const node = await provider.getNode(id);
+    const neighbors = node ? await provider.getNeighbors(id) : [];
+    const rfcs = [
+      ...(node?.relatedRfcs ?? []),
+      ...neighbors.filter((n) => n.node.type === 'rfc').map((n) => n.node.id),
+    ].filter((value, index, arr) => arr.indexOf(value) === index);
+    const repos = neighbors
+      .filter((n) => n.node.type === 'repository' || n.node.type === 'component')
+      .map((n) => n.node.id)
+      .filter((value, index, arr) => arr.indexOf(value) === index);
+    return { id, node, rfcs, repos };
+  }),
+);
+---
+
+<section class="layer-graph" aria-labelledby="layer-graph-heading">
+  <div class="header">
+    <div>
+      <h2 id="layer-graph-heading">Interactive Layer Graph</h2>
+      <p>
+        Navigate L0–L7. Each layer highlights connected RFCs and repositories via GraphProvider.
+      </p>
+    </div>
+    <a class="btn btn-primary" href={graphPageHref({ view: 'architecture', layer: 'L0' })}>
+      View Architecture Graph →
+    </a>
+  </div>
+
+  <div class="layer-rail" role="list">
+    {
+      cards.map((card, index) => (
+        <article class="layer-card panel panel-pad" id={card.id.toLowerCase()} role="listitem">
+          <a class="layer-link" href={graphPageHref({ layer: card.id, node: card.id, view: 'layer' })}>
+            <span class="layer-id">{card.id}</span>
+            <span class="layer-title">{card.node?.title ?? card.id}</span>
+          </a>
+          <p class="desc">{card.node?.description ?? 'Layer metadata placeholder.'}</p>
+          <div class="meta">
+            <div>
+              <h3>Connected RFCs</h3>
+              <p>
+                {card.rfcs.length
+                  ? card.rfcs.map((rfc, i) => (
+                      <>
+                        {i > 0 && ', '}
+                        <a href={`/rfc/${rfc}`}>{rfc}</a>
+                      </>
+                    ))
+                  : '—'}
+              </p>
+            </div>
+            <div>
+              <h3>Connected nodes</h3>
+              <p>
+                {card.repos.length
+                  ? card.repos.map((repo, i) => (
+                      <>
+                        {i > 0 && ', '}
+                        <a href={graphPageHref({ node: repo })}>{repo}</a>
+                      </>
+                    ))
+                  : '—'}
+              </p>
+            </div>
+          </div>
+          {index < cards.length - 1 && <div class="connector" aria-hidden="true">↓</div>}
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.25rem;
+  }
+
+  .header p {
+    margin: 0;
+    color: var(--color-text-muted);
+    max-width: 40rem;
+  }
+
+  .layer-rail {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .layer-card {
+    position: relative;
+  }
+
+  .layer-link {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 0.5rem;
+  }
+
+  .layer-id {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
+  .layer-title {
+    font-weight: 600;
+  }
+
+  .desc {
+    margin: 0 0 var(--space-3);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .meta {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 720px) {
+    .meta {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  h3 {
+    margin: 0 0 0.25rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  .meta p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+
+  .connector {
+    text-align: center;
+    color: var(--color-text-muted);
+    margin-top: var(--space-3);
+  }
+</style>

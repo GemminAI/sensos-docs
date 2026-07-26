@@ -1,0 +1,151 @@
+---
+const layers = [
+  { id: 'ext', label: 'External Sources', detail: 'Sensors · Streams · Agents · APIs' },
+  { id: 'obs', label: 'Observation Runtime', detail: 'Ingress · Normalization · L0–L1' },
+  { id: 'hext', label: 'HEXT', detail: 'Canonical object model' },
+  { id: 'hekb', label: 'HEKB', detail: 'Immutable knowledge substrate' },
+  { id: 'kernel', label: 'NVS Kernel', detail: 'Geometry · Belief · Risk (L4–L5)' },
+  { id: 'dlnp', label: 'DLNP', detail: 'Layer negotiation · Pipeline binding' },
+  { id: 'gov', label: 'Runtime Governance', detail: 'Budgets · Admission · Audit' },
+  { id: 'sdrp', label: 'SDRP', detail: 'Distributed runtime mesh' },
+  { id: 'apps', label: 'Applications', detail: 'Products · Tools · Integrations' },
+];
+---
+
+<figure class="arch-figure panel">
+  <figcaption class="sr-only">SensOS stack architecture from external sources to applications</figcaption>
+  <div class="arch-scroll">
+    <svg
+      class="arch-svg"
+      viewBox="0 0 720 980"
+      role="img"
+      aria-labelledby="arch-title arch-desc"
+    >
+      <title id="arch-title">SensOS Architecture Stack</title>
+      <desc id="arch-desc">
+        Vertical flow: External Sources, Observation Runtime, HEXT, HEKB, NVS Kernel, DLNP,
+        Runtime Governance, SDRP, Applications.
+      </desc>
+
+      <defs>
+        <linearGradient id="archFill" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="currentColor" stop-opacity="0.08" />
+          <stop offset="100%" stop-color="currentColor" stop-opacity="0.02" />
+        </linearGradient>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.55" />
+        </marker>
+      </defs>
+
+      {
+        layers.map((layer, index) => {
+          const y = 36 + index * 104;
+          const nextY = y + 78;
+          return (
+            <g transform={`translate(80, ${y})`}>
+              <rect
+                x="0"
+                y="0"
+                width="560"
+                height="72"
+                rx="8"
+                fill="url(#archFill)"
+                stroke="currentColor"
+                stroke-opacity="0.35"
+                stroke-width="1.5"
+              />
+              <rect x="0" y="0" width="6" height="72" rx="3" fill="currentColor" opacity="0.75" />
+              <text x="28" y="30" class="arch-label">{layer.label}</text>
+              <text x="28" y="52" class="arch-detail">{layer.detail}</text>
+              {index < layers.length - 1 && (
+                <line
+                  x1="280"
+                  y1="72"
+                  x2="280"
+                  y2={nextY - y}
+                  stroke="currentColor"
+                  stroke-opacity="0.45"
+                  stroke-width="1.5"
+                  marker-end="url(#arrow)"
+                />
+              )}
+            </g>
+          );
+        })
+      }
+    </svg>
+  </div>
+  <ol class="arch-list" aria-hidden="true">
+    {layers.map((layer) => (
+      <li>
+        <strong>{layer.label}</strong>
+        <span>{layer.detail}</span>
+      </li>
+    ))}
+  </ol>
+</figure>
+
+<style>
+  .arch-figure {
+    padding: var(--space-4);
+    color: var(--color-accent);
+    overflow: hidden;
+  }
+
+  .arch-scroll {
+    overflow-x: auto;
+  }
+
+  .arch-svg {
+    width: min(100%, 40rem);
+    height: auto;
+    margin-inline: auto;
+    color: var(--color-accent);
+  }
+
+  .arch-svg :global(.arch-label) {
+    fill: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .arch-svg :global(.arch-detail) {
+    fill: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: 13px;
+  }
+
+  .arch-list {
+    display: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .arch-list li {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .arch-list strong {
+    color: var(--color-text);
+  }
+
+  .arch-list span {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 640px) {
+    .arch-svg {
+      display: none;
+    }
+
+    .arch-list {
+      display: block;
+    }
+  }
+</style>

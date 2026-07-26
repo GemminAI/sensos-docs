@@ -1,0 +1,202 @@
+---
+import { formatDate, rfcHref, statusClass, type RfcEntry } from '../lib/rfc';
+
+interface Props {
+  rfcs: RfcEntry[];
+}
+
+const { rfcs } = Astro.props;
+---
+
+<div class="table-wrap panel">
+  <table class="rfc-table">
+    <thead>
+      <tr>
+        <th scope="col">RFC ID</th>
+        <th scope="col">Title</th>
+        <th scope="col">Status</th>
+        <th scope="col">Category</th>
+        <th scope="col">Version</th>
+        <th scope="col">Last Updated</th>
+        <th scope="col">Repository</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rfcs.map((rfc) => (
+          <tr>
+            <td>
+              <a class="rfc-id" href={rfcHref(rfc.id)}>
+                {rfc.id}
+              </a>
+            </td>
+            <td>
+              <a href={rfcHref(rfc.id)}>{rfc.data.title}</a>
+            </td>
+            <td>
+              <span class:list={['status-pill', statusClass(rfc.data.status)]}>
+                {rfc.data.status}
+              </span>
+            </td>
+            <td>{rfc.data.category}</td>
+            <td>
+              <code>{rfc.data.version}</code>
+            </td>
+            <td>{formatDate(rfc.data.updated)}</td>
+            <td>
+              <a
+                href={`https://github.com/${rfc.data.repository}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {rfc.data.repository}
+              </a>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<ul class="rfc-cards">
+  {
+    rfcs.map((rfc) => (
+      <li class="panel panel-pad">
+        <a class="rfc-id" href={rfcHref(rfc.id)}>
+          {rfc.id}
+        </a>
+        <h2>
+          <a href={rfcHref(rfc.id)}>{rfc.data.title}</a>
+        </h2>
+        <dl class="card-meta">
+          <div>
+            <dt>Status</dt>
+            <dd>
+              <span class:list={['status-pill', statusClass(rfc.data.status)]}>
+                {rfc.data.status}
+              </span>
+            </dd>
+          </div>
+          <div>
+            <dt>Category</dt>
+            <dd>{rfc.data.category}</dd>
+          </div>
+          <div>
+            <dt>Version</dt>
+            <dd>
+              <code>{rfc.data.version}</code>
+            </dd>
+          </div>
+          <div>
+            <dt>Updated</dt>
+            <dd>{formatDate(rfc.data.updated)}</dd>
+          </div>
+          <div>
+            <dt>Repository</dt>
+            <dd>
+              <a
+                href={`https://github.com/${rfc.data.repository}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {rfc.data.repository}
+              </a>
+            </dd>
+          </div>
+        </dl>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .rfc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .rfc-table th,
+  .rfc-table td {
+    padding: 0.8rem 0.9rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .rfc-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    background: var(--color-surface-2);
+    white-space: nowrap;
+  }
+
+  .rfc-table tbody tr:hover {
+    background: color-mix(in srgb, var(--color-accent-soft) 70%, transparent);
+  }
+
+  .rfc-id {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .rfc-cards {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--space-3);
+  }
+
+  .rfc-cards h2 {
+    margin: 0.35rem 0 var(--space-3);
+    font-size: 1.05rem;
+  }
+
+  .rfc-cards h2 a {
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .card-meta {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0;
+  }
+
+  .card-meta > div {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .card-meta dt {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .card-meta dd {
+    margin: 0;
+  }
+
+  @media (max-width: 860px) {
+    .table-wrap {
+      display: none;
+    }
+
+    .rfc-cards {
+      display: grid;
+    }
+  }
+</style>

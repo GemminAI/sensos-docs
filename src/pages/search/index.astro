@@ -1,0 +1,219 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate, getAllRfcs, statusClass } from '../../lib/rfc';
+import { PRODUCTS } from '../../lib/site';
+
+const rfcs = await getAllRfcs();
+const searchIndex = {
+  rfcs: rfcs.map((rfc) => ({
+    id: rfc.id,
+    title: rfc.data.title,
+    status: rfc.data.status,
+    category: rfc.data.category,
+    version: rfc.data.version,
+    updated: formatDate(rfc.data.updated),
+    repository: rfc.data.repository,
+    href: `/rfc/${rfc.id}/`,
+  })),
+  products: PRODUCTS.map((product) => ({
+    id: product.slug,
+    title: product.name,
+    summary: product.summary,
+    href: product.docsHref,
+  })),
+  pages: [
+    { title: 'Home', href: '/', summary: 'Portal home' },
+    { title: 'Architecture', href: '/architecture', summary: 'System stack topology' },
+    { title: 'Governance', href: '/governance', summary: 'Principles and change control' },
+    { title: 'Graph', href: '/graph', summary: 'Semantic Graph Explorer' },
+    { title: 'Repositories', href: '/repositories', summary: 'Ecosystem repository pages' },
+    { title: 'Compliance', href: '/compliance', summary: 'Health metrics dashboard' },
+    { title: 'Developer Guide', href: '/developer', summary: 'Contributor guidance' },
+  ],
+};
+---
+
+<BaseLayout title="Search" description="Search SensOS RFCs, products, and portal pages.">
+  <header class="page-header">
+    <p class="eyebrow">Portal Search</p>
+    <h1>Search</h1>
+    <p>Filter RFCs, products, and documentation pages. Index is generated at build time.</p>
+  </header>
+
+  <label class="search-label" for="portal-search">Query</label>
+  <input
+    id="portal-search"
+    class="search-input"
+    type="search"
+    placeholder="e.g. DLNP, CBAC, HEKB, governance…"
+    autocomplete="off"
+    data-search-input
+  />
+  <p class="search-meta" data-search-meta>{searchIndex.rfcs.length + searchIndex.products.length + searchIndex.pages.length} indexed entries</p>
+
+  <div class="results" data-search-results></div>
+
+  <script id="search-index" type="application/json" set:html={JSON.stringify(searchIndex)} />
+
+  <noscript>
+    <h2>RFC Index</h2>
+    <ul>
+      {
+        rfcs.map((rfc) => (
+          <li>
+            <a href={`/rfc/${rfc.id}/`}>
+              {rfc.id} — {rfc.data.title}
+            </a>
+            <span class:list={['status-pill', statusClass(rfc.data.status)]}>{rfc.data.status}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </noscript>
+</BaseLayout>
+
+<script>
+  type SearchIndex = {
+    rfcs: Array<{
+      id: string;
+      title: string;
+      status: string;
+      category: string;
+      version: string;
+      updated: string;
+      repository: string;
+      href: string;
+    }>;
+    products: Array<{ id: string; title: string; summary: string; href: string }>;
+    pages: Array<{ title: string; href: string; summary: string }>;
+  };
+
+  const raw = document.getElementById('search-index')?.textContent ?? '{}';
+  const index = JSON.parse(raw) as SearchIndex;
+  const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+  const results = document.querySelector<HTMLElement>('[data-search-results]');
+  const meta = document.querySelector<HTMLElement>('[data-search-meta]');
+
+  function render(query: string) {
+    if (!results || !meta) return;
+    const q = query.trim().toLowerCase();
+
+    const rfcHits = index.rfcs.filter((item) =>
+      !q ||
+      [item.id, item.title, item.status, item.category, item.repository].join(' ').toLowerCase().includes(q),
+    );
+    const productHits = index.products.filter((item) =>
+      !q || [item.id, item.title, item.summary].join(' ').toLowerCase().includes(q),
+    );
+    const pageHits = index.pages.filter((item) =>
+      !q || [item.title, item.summary].join(' ').toLowerCase().includes(q),
+    );
+
+    meta.textContent = `${rfcHits.length + productHits.length + pageHits.length} matches`;
+
+    const sections = [
+      ['RFCs', rfcHits.map((item) => ({ title: `${item.id} — ${item.title}`, href: item.href, detail: `${item.status} · ${item.category}` }))],
+      ['Products', productHits.map((item) => ({ title: item.title, href: item.href, detail: item.summary }))],
+      ['Pages', pageHits.map((item) => ({ title: item.title, href: item.href, detail: item.summary }))],
+    ] as const;
+
+    results.innerHTML = sections
+      .map(([label, items]) => {
+        if (!items.length) return '';
+        return `
+          <section class="result-section">
+            <h2>${label}</h2>
+            <ul>
+              ${items
+                .map(
+                  (item) => `
+                <li>
+                  <a href="${item.href}">${item.title}</a>
+                  <p>${item.detail}</p>
+                </li>`,
+                )
+                .join('')}
+            </ul>
+          </section>`;
+      })
+      .join('') || '<p class="empty">No matches.</p>';
+  }
+
+  input?.addEventListener('input', () => render(input.value));
+  render('');
+</script>
+
+<style>
+  .search-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .search-input {
+    width: min(100%, 40rem);
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  .search-input:focus {
+    outline: 2px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
+    outline-offset: 1px;
+  }
+
+  .search-meta {
+    margin: 0.5rem 0 var(--space-5);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  :global(.result-section) {
+    margin-bottom: var(--space-5);
+  }
+
+  :global(.result-section h2) {
+    margin: 0 0 var(--space-3);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+  }
+
+  :global(.result-section ul) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  :global(.result-section li) {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  :global(.result-section a) {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  :global(.result-section p) {
+    margin: 0.25rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  :global(.empty) {
+    color: var(--color-text-muted);
+  }
+</style>

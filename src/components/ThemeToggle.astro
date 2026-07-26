@@ -1,0 +1,53 @@
+<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+  <span data-theme-label>Theme</span>
+</button>
+
+<script is:inline>
+  (function () {
+    const key = 'sensos-theme';
+    const root = document.documentElement;
+
+    function systemTheme() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function apply(theme) {
+      root.setAttribute('data-theme', theme);
+      const label = document.querySelector('[data-theme-label]');
+      if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    }
+
+    const stored = localStorage.getItem(key);
+    apply(stored === 'dark' || stored === 'light' ? stored : systemTheme());
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const button = document.querySelector('[data-theme-toggle]');
+      if (!button) return;
+      button.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        localStorage.setItem(key, next);
+        apply(next);
+      });
+      apply(root.getAttribute('data-theme') || systemTheme());
+    });
+  })();
+</script>
+
+<style>
+  .theme-toggle {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.35rem 0.65rem;
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+</style>
