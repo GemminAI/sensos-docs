@@ -1,0 +1,33 @@
+:root {
+  --sensos-card-border: color-mix(in srgb, var(--md-default-fg-color) 12%, transparent);
+}
+
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--sensos-card-border);
+  border-radius: 0.4rem;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-accent-fg-color);
+}
+
+.md-typeset .sensos-hero {
+  margin-bottom: 1.5rem;
+}
+
+.md-typeset .sensos-hero h1 {
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.md-typeset .sensos-subtitle {
+  margin-top: 0;
+  font-size: 1.15rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-typeset table.rfc-meta th {
+  white-space: nowrap;
+  width: 10rem;
+}
