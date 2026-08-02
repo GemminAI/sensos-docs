@@ -73,4 +73,13 @@ export const PRODUCTS = [
     docsHref: '/products/nvs-runtime',
     status: 'Active',
   },
+  {
+    slug: 'meaning-mapper',
+    name: 'Meaning Mapper',
+    summary:
+      'Reference service that maps raw observations into HEXT Observation Objects.',
+    repository: 'GemminAI/meaning-mapper',
+    docsHref: '/products/meaning-mapper',
+    status: 'Active',
+  },
 ] as const;

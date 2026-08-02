@@ -31,6 +31,10 @@ const governing: Record<string, { id: string; title: string }[]> = {
     { id: 'RFC-NVS-0202', title: 'Runtime Governance' },
     { id: 'RFC-NVS-0203', title: 'SDRP' },
   ],
+  'meaning-mapper': [
+    { id: 'RFC-NVS-0207', title: 'Observation ABI' },
+    { id: 'RFC-NVS-0208', title: 'HEXT Object ABI' },
+  ],
 };
 
 const rfcs = governing[product.slug] ?? [];

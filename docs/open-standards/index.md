@@ -36,6 +36,16 @@ Anyone may build software that speaks SensOS interfaces. Public RFCs define thos
 - [Governance Process](/Open-Standards/Governance)
 - [RFC Classification Policy](/Open-Standards/Classification)
 
+## Reference surfaces
+
+| Surface | Role |
+| --- | --- |
+| [Meaning Mapper](https://github.com/GemminAI/meaning-mapper) | Reference **service** / product container: observation → HEXT Observation Object |
+| [semantic-annotator-core](https://github.com/GemminAI/semantic-annotator-core) | Reference **library** implementing deterministic normalization |
+| [nvs-runtime](https://github.com/GemminAI/nvs-runtime) | Reference **runtime** for public interoperability contracts |
+
+Reference implementations clarify intent. Public Standards remain authoritative when they conflict with reference behavior.
+
 ## The boundary that protects the ecosystem
 
 | Public (open) | Not public |
