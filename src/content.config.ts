@@ -20,4 +20,17 @@ const rfc = defineCollection({
   }),
 });
 
-export const collections = { rfc };
+const openStandards = defineCollection({
+  loader: glob({
+    pattern: '**/*.md',
+    base: './docs/open-standards',
+    generateId: ({ entry }) => entry.replace(/\.md$/i, ''),
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().default(''),
+    order: z.number().default(99),
+  }),
+});
+
+export const collections = { rfc, openStandards };

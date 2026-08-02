@@ -25,11 +25,13 @@ docs/
 ## Site navigation (public)
 
 1. Product (Home)
-2. Standards (Public RFCs)
+2. Open Standards (`/Open-Standards`)
 3. Developers
 4. Resources
 5. Enterprise
 6. GitHub
+
+Open Standards includes Charter, RFCs, Classification, Conformance, Certification, Documentation Philosophy, and Governance.
 
 Architecture graphs, compliance dashboards, and internal design notes are **not** primary public navigation.
 

@@ -1,0 +1,140 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { OPEN_STANDARDS_NAV } from '../lib/openStandards';
+
+interface Props {
+  title: string;
+  description?: string;
+  eyebrow?: string;
+}
+
+const {
+  title,
+  description = 'SensOS open interoperability standards.',
+  eyebrow = 'Open Standards',
+} = Astro.props;
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<BaseLayout title={title} description={description}>
+  <header class="page-header">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    {description ? <p class="lede">{description}</p> : null}
+  </header>
+
+  <nav class="os-subnav" aria-label="Open Standards">
+    <ul>
+      {
+        OPEN_STANDARDS_NAV.map((item) => {
+          const href = item.href.replace(/\/$/, '') || '/';
+          const active =
+            href === '/Open-Standards'
+              ? pathname === '/Open-Standards'
+              : pathname === href || pathname.startsWith(`${href}/`);
+          return (
+            <li>
+              <a href={item.href} class:list={[{ active }]}>
+                {item.label}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </nav>
+
+  <div class="os-content">
+    <slot />
+  </div>
+</BaseLayout>
+
+<style>
+  .os-subnav {
+    margin: 0 0 var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .os-subnav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.35rem;
+  }
+
+  .os-subnav a {
+    display: block;
+    padding: 0.45rem 0.65rem;
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .os-subnav a:hover,
+  .os-subnav a.active {
+    color: var(--color-accent);
+    background: var(--color-surface-2);
+  }
+
+  .os-content {
+    max-width: 52rem;
+  }
+
+  .os-content :global(h2) {
+    margin: 2rem 0 0.75rem;
+    font-size: 1.2rem;
+  }
+
+  .os-content :global(h3) {
+    margin: 1.4rem 0 0.55rem;
+    font-size: 1.05rem;
+  }
+
+  .os-content :global(p),
+  .os-content :global(li) {
+    color: var(--color-text-muted);
+  }
+
+  .os-content :global(strong) {
+    color: var(--color-text);
+  }
+
+  .os-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin: 0 0 1.25rem;
+  }
+
+  .os-content :global(th),
+  .os-content :global(td) {
+    border: 1px solid var(--color-border);
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .os-content :global(th) {
+    background: var(--color-surface-2);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .os-content :global(pre) {
+    margin: 0 0 1.25rem;
+    overflow-x: auto;
+  }
+
+  .os-content :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin: 2rem 0;
+  }
+</style>

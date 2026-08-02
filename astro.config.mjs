@@ -7,6 +7,9 @@ export default defineConfig({
   base: '/',
   // Use 'never' so static JSON API endpoints are not emitted as directories.
   trailingSlash: 'never',
+  redirects: {
+    '/rfc': '/Open-Standards/RFCs',
+  },
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/api/'),

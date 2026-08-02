@@ -1,0 +1,30 @@
+---
+import OpenStandardsLayout from '../../layouts/OpenStandardsLayout.astro';
+import RfcTable from '../../components/RfcTable.astro';
+import { getAllRfcs } from '../../lib/rfc';
+
+const rfcs = await getAllRfcs();
+---
+
+<OpenStandardsLayout
+  title="Public RFCs"
+  description="Interface standards for interoperability, ABI, behavior, guarantees, and conformance — not implementation manuals."
+>
+  <p>
+    Public RFCs define <strong>WHAT</strong> compatible systems must honor.
+    They do not publish proprietary algorithms, wire secrets, or product internals.
+  </p>
+  <p>
+    Machine-readable feed:
+    <a href="/api/v1/rfc.json"><code>/api/v1/rfc.json</code></a>
+    · {rfcs.length} public documents
+  </p>
+  <p>
+    Governing process:
+    <a href="/Open-Standards/Charter">Charter</a> ·
+    <a href="/Open-Standards/Classification">Classification</a> ·
+    <a href="/Open-Standards/Governance">Governance</a>
+  </p>
+
+  <RfcTable rfcs={rfcs} />
+</OpenStandardsLayout>

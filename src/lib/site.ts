@@ -26,10 +26,10 @@ export const SITE = {
   contactEmail: 'enterprise@gemminai.com',
 } as const;
 
-/** Primary public navigation — product site, not eng wiki. */
+/** Primary public navigation — product site with open standards. */
 export const NAV = [
   { label: 'Product', href: '/' },
-  { label: 'Standards', href: '/rfc' },
+  { label: 'Open Standards', href: '/Open-Standards' },
   { label: 'Developers', href: '/developer' },
   { label: 'Resources', href: '/resources' },
   { label: 'Enterprise', href: '/enterprise' },

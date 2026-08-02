@@ -1,0 +1,21 @@
+---
+import OpenStandardsLayout from '../../layouts/OpenStandardsLayout.astro';
+import {
+  PAGE_SLUGS,
+  getOpenStandardsPage,
+  renderOpenStandards,
+  type OpenStandardsPageSlug,
+} from '../../lib/openStandards';
+
+export function getStaticPaths() {
+  return PAGE_SLUGS.map((page) => ({ params: { page } }));
+}
+
+const page = Astro.params.page as OpenStandardsPageSlug;
+const entry = await getOpenStandardsPage(page);
+const { Content } = await renderOpenStandards(entry);
+---
+
+<OpenStandardsLayout title={entry.data.title} description={entry.data.description}>
+  <Content />
+</OpenStandardsLayout>

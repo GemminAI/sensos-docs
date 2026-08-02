@@ -1,5 +1,8 @@
 # SensOS Developer Portal
 
+> **AI agents and contributors: read [`README_FIRST.md`](./README_FIRST.md) before any RFC.**
+> It is the constitution of this repository (canonical sources, classification, implementation boundaries).
+
 Official documentation portal for the **SensOS** ecosystem.
 
 | | |

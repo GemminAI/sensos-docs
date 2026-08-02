@@ -1,0 +1,11 @@
+---
+import OpenStandardsLayout from '../../layouts/OpenStandardsLayout.astro';
+import { getOpenStandardsIndex, renderOpenStandards } from '../../lib/openStandards';
+
+const entry = await getOpenStandardsIndex();
+const { Content } = await renderOpenStandards(entry);
+---
+
+<OpenStandardsLayout title={entry.data.title} description={entry.data.description}>
+  <Content />
+</OpenStandardsLayout>

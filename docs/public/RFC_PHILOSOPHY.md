@@ -1,32 +1,14 @@
-# Public RFC Philosophy — WHAT, not HOW
+# Public RFC Philosophy
 
-SensOS publishes **interface standards**, not implementation manuals.
+Superseded as the primary public reference by:
 
-## Public RFCs MUST describe
+**[Documentation Philosophy](/Open-Standards/Documentation-Philosophy)**
 
-| Allowed | Examples |
-| --- | --- |
-| Purpose | Why the contract exists |
-| Guarantees | Security, safety, interoperability promises |
-| Observable behavior | What integrators can rely on at the boundary |
-| ABI / API behavior | Fields, lifecycles, error classes |
-| Compatibility | Versioning and reserved values |
-| Conformance | Edge / Standard / Enterprise observable tiers |
-| State machines (external) | Public lifecycle states only |
+and
 
-## Public RFCs MUST NEVER describe
+**[Open Standards Charter](/Open-Standards/Charter)**
 
-| Forbidden | Examples |
-| --- | --- |
-| Algorithms | Scoring formulas, solver methods, optimized evaluation |
-| Kernel internals | Manager class graphs, private methods |
-| Schedulers / optimizers | Placement heuristics, precision tuning |
-| Execution strategy | Hardware mapping and proprietary runtime methods |
-| Calibration | Thresholds, TTLs, windows, coefficients |
-| Wire encodings | Token grammar, packet layouts, magic bytes |
-| Roadmaps | Future RFC numbers, unfinished feature lists |
-| Implementation notes | File paths, experiment IDs, “not yet implemented” |
+Summary still in force:
 
-## Publication rule
-
-If a sentence helps a competitor rebuild the product faster than it helps a customer integrate safely, it does not belong in a public RFC.
+- Public RFCs answer **WHAT** (interfaces, behavior, guarantees, conformance, compatibility).
+- Public RFCs do not publish proprietary methods, optimizations, or product internals.
