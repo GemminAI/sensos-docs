@@ -1,134 +1,296 @@
 ---
 title: SensOS Open Standards Charter
-description: Why SensOS publishes RFCs, and the public commitments that bound open interoperability.
-order: 2
+description: Why SensOS publishes RFCs, and the public commitments that define open interoperability.
+version: 1.0.0
+status: Adopted
+steward: Gemmina Intelligence LLC
+applies_to: Public SensOS RFC Series and related Open Standards programs
 ---
 
+# SensOS Open Standards Charter
 
-**Version:** 1.0.0  
-**Status:** Adopted  
-**Steward:** Gemmina Intelligence LLC  
-**Applies to:** Public SensOS RFC Series and related open-standards programs
+> **Open Standards define interoperability.  
+> Proprietary implementations drive innovation.  
+> Both are essential to a healthy ecosystem.**
 
-## 1. Mission
+---
 
-SensOS publishes open interface standards so that observation-centered AI runtime safety can be implemented, integrated, and verified across organizations without requiring shared source code or a single vendor runtime.
+## Version Information
 
-The mission of the SensOS Open Standards program is to make **interoperability public**, **interfaces stable**, and **innovation competitive**.
+| Item | Value |
+|------|-------|
+| **Version** | 1.0.0 |
+| **Status** | Adopted |
+| **Steward** | Gemmina Intelligence LLC |
+| **Applies To** | Public SensOS RFC Series and related Open Standards programs |
 
-## 2. Vision
+---
 
-A durable ecosystem in which:
+# 1. Mission
 
-- enterprises can adopt SensOS-compatible systems with confidence,
-- developers can build against published contracts rather than reverse-engineered behavior,
-- partners can certify compatibility without surrendering their own intellectual property,
-- researchers can reason about observable guarantees,
-- and multiple implementations can compete on quality while remaining interoperable.
+SensOS publishes open interface standards so that observation-centered AI runtime safety can be implemented, integrated, verified, and adopted across organizations without requiring shared source code or a single vendor runtime.
 
-SensOS is not merely a software product. SensOS is an **open interoperability platform** accompanied by a proprietary implementation from Gemmina Intelligence.
+The mission of the SensOS Open Standards program is to make:
 
-## 3. Principles
+- **Interoperability public**
+- **Interfaces stable**
+- **Conformance verifiable**
+- **Innovation competitive**
 
-### Open Standards
+Open Standards define **how systems work together**—not **how they are implemented**.
 
-Contracts that enable interchange belong in public specifications. Secrecy is reserved for implementation advantage, not for the definition of interoperability itself.
+---
 
-### Model Independence
+# 2. Vision
 
-Standards describe runtime observation, control, and governance behavior independently of any single model family, vendor API, or training stack.
+SensOS envisions a durable ecosystem in which:
 
-### Interoperability First
+- Enterprises adopt SensOS-compatible systems with confidence.
+- Developers build against published contracts rather than reverse-engineered behavior.
+- Partners certify compatibility without surrendering their own intellectual property.
+- Researchers reason about observable guarantees instead of implementation details.
+- Multiple independent implementations compete on quality while remaining interoperable.
 
-A specification earns its place by enabling independent implementations to work together. Convenience for one codebase is never sufficient justification for a breaking public change.
+SensOS is not merely a software product.
 
-### Specification Before Implementation
+SensOS is an **Open Interoperability Platform** accompanied by proprietary implementations from Gemmina Intelligence and potentially other vendors.
 
-Normative public behavior is written and reviewed before it is treated as a compatibility obligation. Shipping code does not, by itself, create a public standard.
+The long-term objective is to cultivate a vendor-neutral ecosystem where interoperability is defined by public standards and innovation is driven by independent implementations.
 
-### Evidence Before Marketing
+---
 
-Claims about safety, compatibility, or conformance must be backed by published requirements and testable criteria. Public standards are not brochures.
+# 3. Principles
 
-### Stable Interfaces
+## Open Standards
 
-Public interfaces change deliberately. Breaking changes require versioning, migration guidance, and a deprecation window appropriate to enterprise adoption cycles.
+Contracts that enable interoperability belong in public specifications.
 
-### Innovation Through Competition
+Secrecy is reserved for implementation advantage—not for the definition of interoperability itself.
 
-Open interfaces invite multiple implementations. Gemmina Intelligence and any other party may compete on performance, reliability, ergonomics, and proprietary techniques behind those interfaces.
+---
 
-### Community Driven
+## Model Independence
 
-Proposals, discussion, and review are open for public standards work. Stewardship remains accountable, but participation is not limited to a single vendor’s engineering staff.
+Standards describe runtime observation, governance, and control independently of any specific model family, vendor API, hardware platform, or training methodology.
 
-### Backward Compatibility
+---
 
-Where practical, new revisions preserve the observable behavior of prior conforming implementations. When compatibility cannot be preserved, the cost is acknowledged and managed through governance—not surprise.
+## Interoperability First
 
-## 4. Public Commitment
+A specification earns its place by enabling independent implementations to work together.
 
-### Public RFCs define
+Convenience for a single implementation is never sufficient justification for changing a public standard.
+
+---
+
+## Specification Before Implementation
+
+Normative public behavior is specified, reviewed, and approved before it becomes a compatibility obligation.
+
+Shipping software does not automatically create a standard.
+
+---
+
+## Evidence Before Marketing
+
+Claims regarding safety, compatibility, conformance, or interoperability shall be supported by published requirements and verifiable criteria.
+
+Public standards are engineering documents—not marketing material.
+
+---
+
+## Stable Interfaces
+
+Public interfaces evolve deliberately.
+
+Breaking changes require:
+
+- Versioning
+- Migration guidance
+- Deprecation periods
+- Governance review
+
+appropriate for enterprise adoption cycles.
+
+---
+
+## Innovation Through Competition
+
+Open interfaces encourage multiple implementations.
+
+Organizations should compete through:
+
+- Performance
+- Reliability
+- Security
+- Scalability
+- User experience
+- Proprietary runtime technology
+
+—not through incompatible interfaces.
+
+---
+
+## Community Driven
+
+Public standards evolve through open discussion, transparent review, and accountable governance.
+
+Stewardship provides direction—not exclusive ownership of innovation.
+
+---
+
+## Backward Compatibility
+
+Whenever practical, new standards preserve the observable behavior of conforming implementations.
+
+When compatibility cannot be preserved, migration must be governed through transparent versioning—not unexpected change.
+
+---
+
+# 4. Public Commitment
+
+## Public RFCs Define
 
 | Commitment | Meaning |
-| --- | --- |
-| **Interfaces** | Stable names, fields, lifecycles, and error classes at system boundaries |
-| **Behavior** | Observable outcomes integrators may rely on |
-| **Guarantees** | Security, safety, and interoperability promises stated as requirements |
-| **Conformance** | Criteria by which an implementation may claim compatibility |
-| **Compatibility** | Versioning, reserved values, and coexistence rules |
+|------------|---------|
+| **Interfaces** | Stable names, fields, lifecycle states, and error classes exposed at public boundaries |
+| **Behavior** | Observable system behavior that implementers may rely upon |
+| **Guarantees** | Security, safety, interoperability, and behavioral commitments |
+| **Conformance** | Testable requirements for claiming compatibility |
+| **Compatibility** | Versioning rules, coexistence requirements, reserved values, and migration expectations |
 
-### Public RFCs do not define
+---
+
+## Public RFCs Do NOT Define
 
 | Exclusion | Meaning |
-| --- | --- |
-| **Internal algorithms** | Methods used inside a conforming implementation |
-| **Optimizations** | Performance tactics that do not change public meaning |
-| **Runtime implementations** | Source trees, deployment topologies, or product packaging |
-| **Proprietary techniques** | Trade-secret evaluation, calibration, or control strategies |
-| **Product internals** | Roadmaps, unfinished modules, private APIs, and experiment identifiers |
+|-----------|---------|
+| **Internal Algorithms** | Implementation-specific computational methods |
+| **Runtime Optimizations** | Performance techniques invisible to interoperability |
+| **Runtime Implementations** | Source code, deployment architecture, infrastructure, or packaging |
+| **Proprietary Techniques** | Calibration methods, control strategies, execution engines, optimization methods, or trade secrets |
+| **Product Internals** | Private APIs, roadmaps, unfinished modules, experiment identifiers, engineering workflows |
 
-This Charter exists so that openness and competitive advantage reinforce each other rather than collide.
+This Charter exists to ensure that openness and competitive advantage reinforce each other rather than conflict.
 
-## 5. Benefits
+---
 
-### Developers
+# 5. Benefits
 
-Clear contracts, fewer integration surprises, and the freedom to implement against behavior rather than against a single vendor’s private code.
+## Developers
 
-### Partners
+- Stable contracts
+- Predictable integrations
+- Freedom to implement independently
+- Reduced vendor lock-in
 
-A documented path from integration to conformance testing and optional certification, without compulsory disclosure of partner intellectual property.
+---
 
-### Enterprise Customers
+## Partners
 
-Audit-friendly standards, predictable compatibility expectations, and a separation between public guarantees and supplier-specific implementation choices.
+- Clear interoperability targets
+- Conformance testing
+- Optional certification
+- Protection of partner intellectual property
 
-### Researchers
+---
 
-Public behavioral definitions suitable for analysis, comparison, and reproducible evaluation of interoperable systems.
+## Enterprise Customers
 
-### Vendors
+- Audit-friendly standards
+- Long-term compatibility
+- Stable governance
+- Vendor independence
+- Clear separation between public guarantees and proprietary implementations
 
-A market in which compatible products can compete. Open standards reduce accidental lock-in while preserving room for differentiated excellence.
+---
 
-## 6. Stewardship
+## Researchers
 
-Gemmina Intelligence LLC stewards the SensOS Open Standards program, including publication of public RFCs, maintenance of conformance materials, and operation of optional certification tracks.
+- Observable behavioral definitions
+- Reproducible evaluation
+- Standards suitable for scientific comparison
+- Publicly reviewable interoperability requirements
 
-Stewardship does not mean exclusive implementation rights. It means accountable process: clear classification, review, versioning, and deprecation.
+---
 
-## 7. Relationship to Products
+## Vendors
 
-| Layer | Nature |
-| --- | --- |
-| Open Standards | Public interoperability contracts |
-| Conformance Program | Shared tests and compatibility claims |
-| Certification | Optional official validation |
-| Gemmina products | Proprietary implementations that may exceed, but must not contradict, public contracts they claim |
+- Open markets
+- Independent implementations
+- Fair competition
+- Innovation without fragmentation
 
-A product may be more than the standard. A standard must never require disclosure of the product’s private methods.
+---
 
-## 8. Adoption Statement
+# 6. Stewardship
 
-By publishing under this Charter, SensOS commits to treat public RFCs as interface law for interoperability—stable enough for enterprise dependence, open enough for independent implementation, and bounded enough to protect legitimate implementation IP.
+Gemmina Intelligence LLC currently serves as the steward of the SensOS Open Standards program.
+
+Stewardship includes:
+
+- Publishing Public RFCs
+- Maintaining governance
+- Operating Conformance Programs
+- Maintaining Certification Programs
+- Managing versioning and deprecation
+- Protecting interoperability
+
+Stewardship does **not** imply exclusive implementation rights.
+
+It represents accountable governance through transparent processes.
+
+As the SensOS ecosystem grows, governance may evolve to incorporate broader community participation through published governance processes.
+
+---
+
+# 7. Relationship to Products
+
+| Layer | Purpose |
+|--------|---------|
+| **Open Standards** | Public interoperability contracts |
+| **Conformance Program** | Shared compatibility testing |
+| **Certification** | Optional independent validation |
+| **Gemmina Products** | Proprietary implementations that may extend—but never contradict—the public standards they claim to implement |
+
+> **A product may be more than the standard.  
+> A standard must never require disclosure of the product's private methods.**
+
+---
+
+# 8. Adoption Statement
+
+By publishing under this Charter, SensOS commits to treating Public RFCs as the governing law of interoperability.
+
+Public specifications shall be:
+
+- Stable enough for enterprise adoption
+- Open enough for independent implementation
+- Precise enough for conformance testing
+- Flexible enough to encourage innovation
+- Carefully bounded to protect legitimate implementation intellectual property
+
+---
+
+# 9. Charter Statement
+
+The SensOS Open Standards Charter exists to ensure that:
+
+- Interoperability remains open.
+- Governance remains transparent.
+- Interfaces remain stable.
+- Innovation remains competitive.
+
+Open specifications are a public commitment.
+
+Proprietary implementation is a legitimate source of innovation.
+
+Both are essential to a healthy ecosystem.
+
+---
+
+# Guiding Principle
+
+> **Build Compatible Software.  
+> Innovate Independently.  
+> Stay Interoperable.**
