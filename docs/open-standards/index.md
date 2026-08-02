@@ -30,6 +30,7 @@ Anyone may build software that speaks SensOS interfaces. Public RFCs define thos
 
 - [Open Standards Charter](/Open-Standards/Charter)
 - [Public RFCs](/Open-Standards/RFCs)
+- [RFC Namespaces](/Open-Standards/Namespaces) — CORE · HEXT · HEKB · MCP · CAL · SensOS · **MM** · **ITM**
 - [Conformance Program](/Open-Standards/Conformance)
 - [Certification](/Open-Standards/Certification)
 - [Documentation Philosophy](/Open-Standards/Documentation-Philosophy)
@@ -38,13 +39,18 @@ Anyone may build software that speaks SensOS interfaces. Public RFCs define thos
 
 ## Reference surfaces
 
-| Surface | Role |
-| --- | --- |
-| [Meaning Mapper](https://github.com/GemminAI/meaning-mapper) | Reference **service** / product container: observation → HEXT Observation Object |
-| [semantic-annotator-core](https://github.com/GemminAI/semantic-annotator-core) | Reference **library** implementing deterministic normalization |
-| [nvs-runtime](https://github.com/GemminAI/nvs-runtime) | Reference **runtime** for public interoperability contracts |
+| Surface | Role | Governing namespace |
+| --- | --- | --- |
+| [Meaning Mapper](https://github.com/GemminAI/meaning-mapper) | Reference **service** (meaning projection) | **RFC-MM** |
+| [semantic-annotator-core](https://github.com/GemminAI/semantic-annotator-core) | Reference **library** (normalization RI) | (library; consumed by MM) |
+| [nvs-runtime](https://github.com/GemminAI/nvs-runtime) | Reference **runtime** | CORE / NVS public RFCs |
+| All implementing repos | Traceability & evidence | **RFC-ITM** |
 
 Reference implementations clarify intent. Public Standards remain authoritative when they conflict with reference behavior.
+
+### Legacy note
+
+RFC-SA001–SA005 are **Superseded** by RFC-MM001–MM005. Historical RFCs remain archived for traceability.
 
 ## The boundary that protects the ecosystem
 

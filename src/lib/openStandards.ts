@@ -9,6 +9,7 @@ const PAGE_SLUGS = [
   'Certification',
   'Documentation-Philosophy',
   'Governance',
+  'Namespaces',
 ] as const;
 
 export type OpenStandardsPageSlug = (typeof PAGE_SLUGS)[number];
@@ -20,12 +21,14 @@ const FILE_BY_PAGE: Record<OpenStandardsPageSlug, string> = {
   Certification: 'certification',
   'Documentation-Philosophy': 'documentation-philosophy',
   Governance: 'governance',
+  Namespaces: 'namespaces',
 };
 
 export const OPEN_STANDARDS_NAV = [
   { label: 'Overview', href: '/Open-Standards' },
   { label: 'Charter', href: '/Open-Standards/Charter' },
   { label: 'RFCs', href: '/Open-Standards/RFCs' },
+  { label: 'Namespaces', href: '/Open-Standards/Namespaces' },
   { label: 'Classification', href: '/Open-Standards/Classification' },
   { label: 'Conformance', href: '/Open-Standards/Conformance' },
   { label: 'Certification', href: '/Open-Standards/Certification' },

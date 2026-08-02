@@ -39,9 +39,24 @@ Release markers:
 | --- | --- |
 | `v1.0-research` | Final Research Documentation Era (historical) |
 | `v2.0-enterprise` | Enterprise Product + Open Standards (current public face) |
+| `v2.1-open-standards` | Open Standards Foundation |
 
 `main` represents the official public product and open-standards platform.
 History behind it remains readable. History does not override present canon.
+
+### RFC namespaces (mandatory awareness)
+
+Active product/process namespaces include CORE, HEXT, HEKB, MCP, CAL, SensOS,
+ARCH, PROCESS, plus:
+
+| Namespace | Role |
+| --- | --- |
+| **RFC-MM** | Meaning Mapper product specification (canonical) |
+| **RFC-ITM** | Implementation Traceability & Evidence (cross-cutting) |
+
+Legacy **RFC-SA001–SA005** are **Superseded** by **RFC-MM001–MM005**.
+Do not implement from RFC-SA. See `/Open-Standards/Namespaces` and
+`docs/public/RFC_SA_TO_MM_MIGRATION.md`.
 
 ---
 
@@ -145,6 +160,7 @@ Website entry points (rendered canon):
 | `/Open-Standards` | Ecosystem overview |
 | `/Open-Standards/Charter` | Why standards are public |
 | `/Open-Standards/RFCs` | Public RFC index |
+| `/Open-Standards/Namespaces` | Namespace map (MM, ITM, legacy SA) |
 | `/Open-Standards/Conformance` | Compatibility claims |
 | `/Open-Standards/Certification` | Official validation |
 | `/Open-Standards/Governance` | Process law |
@@ -318,7 +334,7 @@ Primary references:
 2. Observation before implementation.
 3. Canonical documents override historical ones.
 4. Active Public Standards override research-era text.
-5. Superseded RFCs never drive architecture.
+5. Superseded RFCs never drive architecture (including RFC-SA → use RFC-MM).
 6. Public specifications define WHAT.
 7. Partner specifications define HOW TO INTEGRATE.
 8. Internal documents define HOW IT WORKS.

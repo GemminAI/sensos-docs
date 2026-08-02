@@ -113,6 +113,28 @@ Until metadata is fully unified, map portal `status` values as follows:
 | Deprecated | Deprecated | Historic or Standards Track (sunset) |
 | Superseded | Superseded | Historic |
 
-## 10. Enforcement
+## 10. RFC namespaces
+
+RFCs are further organized by **namespace**. Namespace assignment does not replace Classification; both MUST be declared.
+
+| Namespace | Purpose | Notes |
+| --- | --- | --- |
+| RFC-CORE | Kernel / observation core | Unchanged |
+| RFC-HEXT | Object / transport | Unchanged |
+| RFC-HEKB | Knowledge base | Unchanged |
+| RFC-MCP | MCP extensions | Unchanged |
+| RFC-CAL | Cache / projection | Unchanged |
+| RFC-SensOS | Platform managers | Unchanged |
+| RFC-ARCH | Architectural taxonomy | Unchanged |
+| RFC-PROCESS | Lifecycle protocol | Unchanged |
+| **RFC-MM** | Meaning Mapper product specs | New |
+| **RFC-ITM** | Implementation traceability & evidence | New; cross-cutting |
+| RFC-SA | Legacy semantic annotation | **Superseded** by RFC-MM; Historic |
+
+See [RFC Namespaces](/Open-Standards/Namespaces).
+
+**RFC-ITM** applies to every product namespace. It does not define product ABIs.
+
+## 11. Enforcement
 
 Material that violates this policy SHALL be blocked from public release, redacted, or reclassified before publication. Conformance and certification programs SHALL cite only Public Standard and explicitly approved Partner annexes.

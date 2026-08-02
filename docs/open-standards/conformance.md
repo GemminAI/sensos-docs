@@ -66,13 +66,16 @@ Gemmina Intelligence may provide one or more **reference implementations**.
 - Where reference behavior and a Public Standard conflict, the **Public Standard wins** after governance correction.
 - Proprietary extensions in a reference implementation are not conformance requirements unless elevated into a Public Standard.
 
-Current observation-normalization reference surfaces:
+Current observation / meaning reference surfaces:
 
-| Artifact | Role |
-| --- | --- |
-| [Meaning Mapper](https://github.com/GemminAI/meaning-mapper) | Reference service / product container (`POST /map`, `gemminai/meaning-mapper`) |
-| [semantic-annotator-core](https://github.com/GemminAI/semantic-annotator-core) | Reference library RI consumed by Meaning Mapper |
-| [nvs-runtime](https://github.com/GemminAI/nvs-runtime) | Reference runtime for public runtime contracts |
+| Artifact | Role | Namespace |
+| --- | --- | --- |
+| [Meaning Mapper](https://github.com/GemminAI/meaning-mapper) | Reference service (`POST /map`, `POST /api/v1/annotate`) | RFC-MM |
+| [semantic-annotator-core](https://github.com/GemminAI/semantic-annotator-core) | Reference library RI | (library) |
+| [nvs-runtime](https://github.com/GemminAI/nvs-runtime) | Reference runtime | CORE / NVS |
+| Evidence & readiness | Cross-cutting implementation proof | **RFC-ITM** |
+
+Compatible claims that cite Standards Track RFCs SHOULD retain RFC-ITM002 evidence where the Conformance Program requires it.
 
 ## 7. Conformance Test Runner
 
