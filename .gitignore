@@ -1,3 +1,13 @@
+# Access-controlled documentation tiers (keep README.md stubs only)
+docs/partner/**
+!docs/partner/README.md
+docs/enterprise/**
+!docs/enterprise/README.md
+docs/internal/**
+!docs/internal/README.md
+docs/trade-secret/**
+!docs/trade-secret/README.md
+
 # build
 dist/
 .astro/

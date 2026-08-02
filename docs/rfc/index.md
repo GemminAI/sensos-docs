@@ -1,15 +1,22 @@
-# RFC Series
+# Open Standards
 
-Normative and procedural specifications for the SensOS ecosystem.
+SensOS publishes **interface standards** for interoperability — not implementation manuals.
 
-The portal publishes RFCs under the `RFC-NVS-*` namespace. Governance specifications use the `RFC-NVS-GOV-*` prefix. The Kernel Executive series (Governance, Domain Separation, Goal Manager) publishes under the `RFC-SensOS-*` prefix, matching its canonical numbering in the SensOS RFC ecosystem.
+Public RFCs describe:
 
-## Kernel Executive
+- purpose and guarantees
+- ABI and observable behavior
+- lifecycle and compatibility
+- conformance expectations
 
-Status: **Active / Implemented**, reference implementation [`GemminAI/nvs-kernel`](https://github.com/GemminAI/nvs-kernel), validated by the EXP-8000 integration suite.
+They do **not** publish algorithms, wire secrets, calibration, kernel internals, or roadmaps.
 
-- [RFC-SensOS21 — Semantic Governance Architecture](/rfc/RFC-SensOS21)
-- [RFC-SensOS22 — Domain Boundary Separation & Kernel Manager Architecture](/rfc/RFC-SensOS22)
-- [RFC-SensOS23 — Goal Manager & Intent Decomposition Protocol](/rfc/RFC-SensOS23)
+## Philosophy
 
-Machine-readable index: [`/api/v1/rfc.json`](/api/v1/rfc.json)
+See [RFC Philosophy](/developer) and the repository document `docs/public/RFC_PHILOSOPHY.md`.
+
+## Public RFC series
+
+Browse the index below. Partner and internal specifications are distributed under separate access control and are not hosted on this site.
+
+Machine-readable public index: [`/api/v1/rfc.json`](/api/v1/rfc.json)

@@ -2,9 +2,9 @@
 title: NVS Capability-Based Access Control
 status: Proposed
 category: Security and capability architecture
-version: "1.0.0"
-updated: 2026-07-26
-repository: GemminAI/nvs-runtime
+version: "1.1.0"
+updated: 2026-08-02
+repository: TBD — public SensOS repository
 supersedes: []
 superseded_by: []
 related:
@@ -16,46 +16,100 @@ related:
 
 ## Abstract
 
-This specification defines Capability-Based Access Control (CBAC) for SensOS. A capability authorizes an agent to negotiate, bind, execute, observe, or control a Layer Port within explicit scope, budget, tenant, and expiry limits.
+This specification defines the public security model for Capability-Based Access Control (CBAC) in SensOS: capabilities authorize negotiate, bind, execute, observe, or control actions within explicit scope, budget, tenant, and time bounds.
+
+This public RFC describes **concepts, guarantees, and observable authorization behavior**. Token syntax, wire encoding, hop grammar, TTL values, and validation-order tables are published only in the Partner Specification under NDA.
+
+## Purpose
+
+Establish a least-privilege authorization model in which:
+
+1. Agents act only with explicitly granted capabilities.
+2. Audit records never retain raw bearer secrets.
+3. Delegation can narrow authority but cannot expand it.
+4. Revocation can invalidate an authorization root efficiently.
+5. Enterprise operators can reason about authorization without reading proprietary token encodings.
+
+## Scope
+
+**In scope (public):**
+
+- CBAC concept and security goals
+- Separation of bearer presentation vs audit evidence
+- Delegation principles (narrowing only)
+- Revocation principles
+- Scope classes at a conceptual level
+- Cancellation authorization principles
+
+**Out of scope (not public):**
+
+- Token prefixes and grammar
+- Wire encodings and canonical payload layouts
+- Numeric hop limits and TTL constants
+- Certificate lifetime constants
+- Validation-order algorithms
+- Transport broadcast encodings for revocation
 
 ## Security model
 
-Callers present a raw `agent_capability_token` only at an authenticated API or transport boundary. Immutable HEKB objects and audit records MUST contain only `root_token_hash`, defined as SHA-256 of the canonical, signed hop-0 payload. They MUST NOT contain a raw token, bearer secret, or delegable private key.
+Callers present a capability credential only at an authenticated API or transport boundary.
 
-The authorization engine MUST verify the token signature, tenant binding, expiry, requested scope, resource limits, and revocation state before action. Requested `budget.max_cost_units` MUST not exceed `resource_limits.max_cost_units`; otherwise it returns `ERR_CAPABILITY_LIMIT_EXCEEDED`.
+Immutable audit and knowledge records MUST store only a non-reversible authorization root reference derived from the root capability. They MUST NOT store raw bearer tokens, delegable secrets, or private keys.
 
-## Token and delegation chain
+Before privileged action, the authorization engine MUST verify:
 
-A token is `cap_tok_v1.` followed by a base64url-encoded canonical payload containing `root_token_hash`, `tenant_id`, `agent_id`, `resource_limits`, and a `delegation_chain`. A hop includes ordinal, issuer, signing-key identifier, scopes, expiry, nonce, signature, and target delegate where applicable.
+- authenticity of the capability,
+- tenant binding,
+- validity window,
+- requested scope,
+- resource limits,
+- revocation state.
 
-Hop 0 MUST be signed by the KMS root authority. A later hop MUST be signed by a KMS-certified node key and MAY delegate only to its declared target. The chain MUST contain no more than five hops. Every later hop MUST have subset scopes, a non-increasing expiry, and a lifetime of no more than ten seconds. Receivers MUST validate every signature and issuer/target continuity.
+Requested cost/budget MUST NOT exceed granted limits.
 
-Each authorized node receives a KMS-signed certificate that expires within one hour. A sender MUST create a down-scoped, short-lived hop for remote work and MUST NOT forward its received bearer token unchanged.
+## Delegation principles
 
-## Revocation
+Delegation is permitted only when it:
 
-Revocation is keyed by `root_token_hash`, not an individual delegated hop. Receivers MUST consult the local revocation cache before use; its refresh interval MUST be shorter than the maximum hop lifetime. Emergency revocation MUST be broadcast as `TOKEN_REVOKED` over SDRP.
+1. preserves the same authorization root identity for audit,
+2. narrows (never expands) scopes,
+3. does not extend validity beyond the parent capability,
+4. binds the delegate to an intended target where required,
+5. remains short-lived relative to the parent for remote work.
 
-## Scope registry
+Receivers MUST NOT forward an unchanged long-lived bearer credential across trust boundaries. Remote work MUST use a down-scoped derived capability.
 
-| Scope | Authorized action class |
+## Revocation principles
+
+Revocation is keyed by the authorization root reference, not by each ephemeral delegate independently. Conformant receivers MUST honor revocation before accepting privileged work. Emergency revocation MUST propagate across the distributed runtime control plane.
+
+## Scope classes (conceptual)
+
+Capabilities are expressed over action classes such as ingest, observe, annotate, store, evaluate, control, pipeline management, and administrative override. Exact scope string registries and enforcement tables are partner-documented.
+
+Administrative override is an exceptional class and MUST be tightly controlled. Kernel-internal safety fallback is not a client-grantable capability.
+
+## Cancellation authorization (conceptual)
+
+A cancellation request is authorized when it is issued by the owning authorization root, by a same-tenant pipeline manager capability, or by an administrative override capability. All other requests MUST fail closed.
+
+## Observable behavior
+
+| Concern | Public expectation |
 | --- | --- |
-| `scope:L0_ingest` | accept and normalize raw ingress |
-| `scope:L1_observe` | create or read observation metadata |
-| `scope:L2_annotate` | produce semantic features |
-| `scope:L3_store` | canonicalize and persist HEXT objects |
-| `scope:L4_execute` | perform semantic geometry |
-| `scope:L5_execute` | update belief and evaluate risk boundaries |
-| `scope:L6_control` | emit control commands or request explicit fallback |
-| `scope:L7_execute` | apply an authorized policy to a target system |
-| `scope:pipeline_manage` | plan, bind, observe, and cancel own-tenant pipelines |
-| `scope:admin_override` | cross-tenant cancellation and forced teardown |
+| Presentation | Capability shown only at authenticated boundaries |
+| Audit | Root reference only; no raw secrets in durable stores |
+| Delegation | Narrowing only; no privilege expansion |
+| Remote forward | Down-scoped derived capability required |
+| Limits | Budget/scope overruns fail closed |
+| Revocation | Root-keyed; checked before use |
+| Denial | Unauthorized cancel/execute fails closed |
 
-`scope:L6_control` MUST be exercised only by an enclave-attested control node. Kernel-internal safety fallback is not a client capability.
+## Partner Specification
 
-## Cancellation authorization
+Token grammar, encoding, hop rules, TTL constants, certificate lifetimes, scope string registry, and validation procedures are defined in:
 
-A request may cancel a pipeline when its `root_token_hash` equals the recorded owner hash; when its tenant matches and it has `scope:pipeline_manage`; or when it has `scope:admin_override`. All other requests MUST fail with `ERR_AUTHORIZATION_FAILED`.
+**Partner Specification: CBAC Token Grammar** (NDA)
 
 ## Normative keywords
 

@@ -1,22 +1,22 @@
-# Architecture
+# Architecture (overview)
 
-SensOS is an observation-centered runtime platform. Constitutional rules live in the RFC series; this section maps those norms onto the system stack.
+SensOS is an observation-centered runtime safety platform.
 
-## Kernel Executive Layer
+At a product level, the system:
 
-```
-Governance
-    ↓
-Goal Manager
-    ↓
-Workspace
-    ↓
-Runtime
-```
+1. **Observes** AI runtime behavior
+2. **Understands** semantic trajectory risk
+3. **Controls** unsafe behavior without modifying model weights
 
-- **Governance** ([RFC-SensOS21](/rfc/RFC-SensOS21)) — the Law/Policy hierarchy and pre-execution validation engine; the final gate every Directive and Instruction must pass.
-- **Goal Manager** ([RFC-SensOS23](/rfc/RFC-SensOS23)) — arbitrates conflicting Goals and decomposes an accepted Goal into Directives and Instructions.
-- **Workspace** ([RFC-SensOS22](/rfc/RFC-SensOS22)) — the execution-environment container (Context, ProcessState, RuntimeObjects, CachingSubsystem) a Goal's Instructions run inside.
-- **Runtime** — the R0–R7 Observation→Control pipeline (RFC-SensOS12–19) and its Kernel managers (Cache, Memory, Knowledge, Observation, Resource) that Workspace and Goal Manager sit above.
+## What is public
 
-Reference implementation: [`GemminAI/nvs-kernel`](https://github.com/GemminAI/nvs-kernel), validated by the EXP-8000 integration suite.
+- Constitutional roles and responsibility boundaries (RFC-NVS-0204)
+- Public ABIs and interoperability contracts
+- Conformance expectations
+
+## What is not public
+
+Detailed kernel diagrams, internal module inventories, experiment suites, deployment topologies, and execution strategies are not published on this site.
+
+For integration, start with [Public RFCs](/rfc) and [Developer Docs](/developer).
+Enterprise diligence materials are available under agreement via [Enterprise](/enterprise).

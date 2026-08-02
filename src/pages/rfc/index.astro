@@ -7,23 +7,24 @@ const rfcs = await getAllRfcs();
 ---
 
 <BaseLayout
-  title="RFC Series"
-  description="Index of SensOS RFCs with status, category, version, and repository provenance."
+  title="Open Standards"
+  description="Public SensOS RFCs: interoperability, ABI, behavior, and conformance — not implementation manuals."
 >
   <header class="page-header">
-    <p class="eyebrow">Specifications</p>
-    <h1>RFC Series</h1>
+    <p class="eyebrow">Open Standards</p>
+    <h1>Public RFCs</h1>
     <p>
-      Normative and procedural specifications for the SensOS ecosystem. Each
-      entry opens a dedicated page with metadata, rendered content, and
-      navigation to related RFCs.
+      SensOS publishes interface standards. These documents describe
+      interoperability, ABI, observable behavior, and conformance.
+      They do not disclose algorithms, wire secrets, or proprietary execution methods.
     </p>
   </header>
 
   <p class="index-note">
     Machine-readable feed:
     <a href="/api/v1/rfc.json"><code>/api/v1/rfc.json</code></a>
-    · {rfcs.length} published documents
+    · {rfcs.length} public documents
+    · <a href="/developer">RFC philosophy</a>
   </p>
 
   <RfcTable rfcs={rfcs} />

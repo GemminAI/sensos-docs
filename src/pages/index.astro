@@ -1,157 +1,141 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { formatDate, getAllRfcs, rfcHref, statusClass } from '../lib/rfc';
-import { PRODUCTS, SITE } from '../lib/site';
+import { SITE } from '../lib/site';
 
-const rfcs = await getAllRfcs();
-const latestRfcs = [...rfcs].sort(
-  (a, b) => b.data.updated.valueOf() - a.data.updated.valueOf() || b.id.localeCompare(a.id),
-);
+const platforms = ['OpenAI', 'Anthropic', 'Gemini', 'Llama', 'Mistral', 'Qwen', 'Local Models'];
 
-const principles = [
+const benefits = [
   {
-    title: 'Specification before implementation',
-    body: 'Public interfaces and ABIs are governed by Active or Standard RFCs before merge to main.',
+    title: 'Enterprise Safety',
+    body: 'Continuous runtime oversight for production AI — beyond prompt filters and output scanners.',
   },
   {
-    title: 'Canonical documentation over duplication',
-    body: 'sensos.org is the SSOT. Repository READMEs point here instead of forking normative text.',
+    title: 'Model Agnostic',
+    body: 'Works with the models you already run. No weight changes required.',
   },
   {
-    title: 'Capability before execution',
-    body: 'CBAC authorizes privileged DLNP and SDRP actions; raw tokens never enter HEKB.',
+    title: 'Auditable',
+    body: 'Durable evidence of observation, authorization, and intervention decisions.',
   },
   {
-    title: 'Canonicalization before identity',
-    body: 'Stable content_id exists only after L3 HEXT canonicalization.',
+    title: 'Low Latency',
+    body: 'Designed for online inference paths where delayed safety is failed safety.',
   },
   {
-    title: 'Evidence before inference',
-    body: 'Runtime governance records authorization lineage and partial outcomes as immutable objects.',
+    title: 'Works with Existing Models',
+    body: 'Observe and control behavior without retraining or replacing your stack.',
   },
 ];
 
 const resources = [
-  { href: '/developer', title: 'Developer Guide', body: 'Local build, RFC frontmatter, contribution workflow.' },
-  { href: '/rfc', title: 'RFC Index', body: 'Normative and procedural specifications with lifecycle metadata.' },
-  { href: '/architecture', title: 'Architecture', body: 'Stack diagram and interactive L0–L7 layer graph.' },
-  { href: '/graph', title: 'Graph Explorer', body: 'Semantic navigation across RFCs, repos, layers, and components.' },
-  { href: '/governance', title: 'Governance', body: 'RFC-NVS-GOV-0001 principles, workflow, and change control.' },
-  { href: '/compliance', title: 'Compliance', body: 'Health metrics dashboard backed by compliance/index.json.' },
-];
-
-const quickLinks = [
-  { href: '/rfc', label: 'Documentation · RFC' },
-  { href: '/graph', label: 'Graph Explorer' },
-  { href: '/compliance', label: 'Compliance' },
-  { href: SITE.repo, label: 'GitHub', external: true },
-  { href: '/api/v1/rfc.json', label: 'API · RFC JSON' },
-  { href: '/api/v1/graph/metadata.json', label: 'API · Graph metadata' },
-  { href: '/repositories', label: 'Repositories' },
-  { href: '/search', label: 'Search' },
+  { href: '/resources#whitepaper', title: 'Whitepaper', body: 'Observation-first AI safety for enterprise leaders.' },
+  { href: '/developer', title: 'Developer Docs', body: 'Integrate against public interfaces and conformance tiers.' },
+  { href: '/rfc', title: 'Public RFCs', body: 'Open standards for interoperability — not implementation manuals.' },
+  { href: '/resources#case-studies', title: 'Case Studies', body: 'Production patterns for platform and risk teams.' },
+  { href: '/resources#research', title: 'Research', body: 'Selected public research and standards notes.' },
 ];
 ---
 
-<BaseLayout title="Home" description={SITE.description}>
+<BaseLayout
+  title="Observation-Centered Runtime Safety"
+  description={SITE.description}
+>
   <header class="page-header home-header">
-    <p class="eyebrow">Official Documentation · v{SITE.version} {SITE.channel}</p>
-    <h1>SensOS Developer Portal</h1>
+    <p class="eyebrow">Enterprise AI Runtime Safety</p>
+    <h1>
+      Observation First.<br />
+      True AI Safety.<br />
+      Without Changing Your Model.
+    </h1>
     <p class="lede">
-      Canonical specifications, architecture contracts, and machine-readable indexes
-      for the SensOS ecosystem. Written for implementers, reviewers, and tooling.
+      SensOS continuously observes AI runtime behavior, detects semantic trajectory risks,
+      and safely controls AI systems without modifying model weights.
     </p>
     <div class="btn-row" style="margin-top: 1.25rem;">
-      <a class="btn btn-primary" href="/rfc">Browse RFCs</a>
-      <a class="btn" href="/architecture">Architecture</a>
-      <a class="btn" href="/graph">Graph Explorer</a>
-      <a class="btn" href="/developer">Developer Guide</a>
+      <a class="btn btn-primary" href="/enterprise#demo">Request Demo</a>
+      <a class="btn" href="/resources#whitepaper">Read Whitepaper</a>
     </div>
   </header>
 
-  <section class="home-section" aria-labelledby="mission-heading">
-    <h2 id="mission-heading">Mission</h2>
+  <section class="home-section" aria-labelledby="problem-heading">
+    <h2 id="problem-heading">The Problem</h2>
+    <p>Today's AI systems are black boxes.</p>
+    <ul class="home-list">
+      <li>Prompt engineering cannot monitor hidden runtime behavior.</li>
+      <li>RLHF cannot protect production inference.</li>
+      <li>Current guardrails only inspect inputs and outputs.</li>
+    </ul>
+  </section>
+
+  <section class="home-section" aria-labelledby="solution-heading">
+    <h2 id="solution-heading">The Solution</h2>
     <p>
-      Maintain a single, auditable source of truth for SensOS interfaces so runtimes,
-      kernels, knowledge substrates, and agents can interoperate without informal drift.
-      This portal publishes normative text and indexes — not product marketing.
+      SensOS is an Observation-Centered Runtime Safety Platform.
+    </p>
+    <p>
+      Instead of modifying models, SensOS observes semantic trajectories,
+      predicts instability, and intervenes before unsafe behavior emerges.
     </p>
   </section>
 
-  <section class="home-section" aria-labelledby="what-heading">
-    <h2 id="what-heading">What is SensOS?</h2>
-    <p>
-      SensOS is an observation-centered runtime platform. External streams enter an
-      observation runtime, are canonicalized into HEXT, persisted through HEKB, evaluated
-      by the NVS Kernel, negotiated via DLNP, governed at runtime, and distributed over SDRP
-      to applications. Authority for those contracts lives in the RFC series.
-    </p>
-    <div class="panel panel-pad scope-panel">
-      <table class="scope-table">
-        <thead>
-          <tr>
-            <th scope="col">In scope</th>
-            <th scope="col">Out of scope</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>RFC Series (SSOT)</td>
-            <td>Runtime implementation source trees</td>
-          </tr>
-          <tr>
-            <td>Architecture & ABI contracts</td>
-            <td>Product marketing pages</td>
-          </tr>
-          <tr>
-            <td>Governance & compliance indexes</td>
-            <td>Vendor sales content</td>
-          </tr>
-          <tr>
-            <td>Developer contribution guidance</td>
-            <td>Proprietary customer deployments</td>
-          </tr>
-        </tbody>
-      </table>
+  <section class="home-section" aria-labelledby="how-heading">
+    <h2 id="how-heading">How It Works</h2>
+    <p>Three steps. No implementation theater.</p>
+    <div class="card-grid how-grid">
+      <div class="panel panel-pad home-card static">
+        <h3>Observe</h3>
+        <p>Continuously watch runtime behavior as it unfolds.</p>
+      </div>
+      <div class="panel panel-pad home-card static">
+        <h3>Understand</h3>
+        <p>Detect semantic trajectory risk before harm reaches users.</p>
+      </div>
+      <div class="panel panel-pad home-card static">
+        <h3>Control</h3>
+        <p>Intervene safely — without changing model weights.</p>
+      </div>
     </div>
   </section>
 
-  <section class="home-section" aria-labelledby="principles-heading">
-    <h2 id="principles-heading">Core Principles</h2>
-    <ol class="principles">
+  <section class="home-section" aria-labelledby="benefits-heading">
+    <h2 id="benefits-heading">Benefits</h2>
+    <div class="card-grid">
       {
-        principles.map((item) => (
-          <li>
-            <strong>{item.title}</strong>
-            <span>{item.body}</span>
-          </li>
+        benefits.map((item) => (
+          <div class="panel panel-pad home-card static">
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </div>
         ))
       }
-    </ol>
+    </div>
   </section>
 
-  <section class="home-section" aria-labelledby="arch-heading">
-    <h2 id="arch-heading">Architecture Overview</h2>
+  <section class="home-section" aria-labelledby="platforms-heading">
+    <h2 id="platforms-heading">Supported Platforms</h2>
+    <p>Model-agnostic by design.</p>
+    <ul class="platform-row" aria-label="Supported platforms">
+      {platforms.map((name) => <li>{name}</li>)}
+    </ul>
+  </section>
+
+  <section class="home-section" aria-labelledby="standards-heading">
+    <h2 id="standards-heading">Open Standards</h2>
     <p>
-      Data and control flow move from external sources through observation, HEXT/HEKB,
-      kernel evaluation, negotiation, governance, and distributed runtime surfaces.
+      SensOS publishes interface standards — not implementation.
     </p>
-    <pre class="arch-flow" aria-label="Architecture stack"><code>External Sources
-→ Observation Runtime
-→ HEXT
-→ HEKB
-→ NVS Kernel
-→ DLNP
-→ Runtime Governance
-→ SDRP
-→ Applications</code></pre>
+    <p>
+      Public RFCs describe interoperability, conformance, ABI, and behavior.
+      They do not disclose algorithms, kernels, or proprietary execution methods.
+    </p>
     <div class="btn-row">
-      <a class="btn" href="/architecture">Open Architecture</a>
-      <a class="btn" href="/architecture#l0">Interactive Layer Graph (L0–L7)</a>
+      <a class="btn btn-primary" href="/rfc">Browse Public RFCs</a>
+      <a class="btn" href="/developer">Developer Docs</a>
     </div>
   </section>
 
   <section class="home-section" aria-labelledby="resources-heading">
-    <h2 id="resources-heading">Developer Resources</h2>
+    <h2 id="resources-heading">Resources</h2>
     <div class="card-grid">
       {
         resources.map((item) => (
@@ -162,84 +146,6 @@ const quickLinks = [
         ))
       }
     </div>
-  </section>
-
-  <section class="home-section" aria-labelledby="latest-rfc-heading">
-    <h2 id="latest-rfc-heading">Latest RFCs</h2>
-    <div class="table-wrap panel">
-      <table class="rfc-mini">
-        <thead>
-          <tr>
-            <th scope="col">RFC ID</th>
-            <th scope="col">Title</th>
-            <th scope="col">Status</th>
-            <th scope="col">Updated</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            latestRfcs.map((rfc) => (
-              <tr>
-                <td>
-                  <a href={rfcHref(rfc.id)}>
-                    <code>{rfc.id}</code>
-                  </a>
-                </td>
-                <td>
-                  <a href={rfcHref(rfc.id)}>{rfc.data.title}</a>
-                </td>
-                <td>
-                  <span class:list={['status-pill', statusClass(rfc.data.status)]}>
-                    {rfc.data.status}
-                  </span>
-                </td>
-                <td>{formatDate(rfc.data.updated)}</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
-    <p class="section-foot">
-      <a href="/rfc">Full RFC index →</a>
-    </p>
-  </section>
-
-  <section class="home-section" aria-labelledby="products-heading">
-    <h2 id="products-heading">Products</h2>
-    <div class="card-grid products">
-      {
-        PRODUCTS.map((product) => (
-          <a class="panel panel-pad home-card" href={product.docsHref}>
-            <div class="product-top">
-              <h3>{product.name}</h3>
-              <span class="status-pill status-active">{product.status}</span>
-            </div>
-            <p>{product.summary}</p>
-            <code>{product.repository}</code>
-          </a>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="home-section" aria-labelledby="quick-heading">
-    <h2 id="quick-heading">Quick Links</h2>
-    <ul class="quick-links">
-      {
-        quickLinks.map((link) => (
-          <li>
-            {'external' in link && link.external ? (
-              <a href={link.href} target="_blank" rel="noopener noreferrer">
-                {link.label}
-              </a>
-            ) : (
-              <a href={link.href}>{link.label}</a>
-            )}
-          </li>
-        ))
-      }
-    </ul>
   </section>
 </BaseLayout>
 
@@ -260,58 +166,13 @@ const quickLinks = [
     color: var(--color-text-muted);
   }
 
-  .scope-panel {
-    padding: 0;
-    overflow: hidden;
-  }
-
-  .scope-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-  }
-
-  .scope-table th,
-  .scope-table td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--color-border);
-    text-align: left;
-    vertical-align: top;
-  }
-
-  .scope-table th {
-    color: var(--color-text-muted);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background: var(--color-surface-2);
-  }
-
-  .principles {
+  .home-list {
     margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  .principles li {
-    display: grid;
-    gap: 0.25rem;
-    padding: var(--space-4);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    background: var(--color-surface);
-  }
-
-  .principles span {
+    padding-left: 1.2rem;
+    max-width: 48rem;
     color: var(--color-text-muted);
-    font-size: 0.95rem;
-  }
-
-  .arch-flow {
-    margin: 0 0 var(--space-4);
-    max-width: 36rem;
+    display: grid;
+    gap: 0.55rem;
   }
 
   .card-grid {
@@ -324,13 +185,13 @@ const quickLinks = [
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .card-grid.products {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .how-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 1100px) {
-    .card-grid {
+    .card-grid:not(.how-grid) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
@@ -342,7 +203,7 @@ const quickLinks = [
     gap: 0.45rem;
   }
 
-  .home-card:hover {
+  .home-card:not(.static):hover {
     border-color: var(--color-accent);
   }
 
@@ -357,75 +218,21 @@ const quickLinks = [
     font-size: 0.92rem;
   }
 
-  .product-top {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-2);
-    align-items: center;
-  }
-
-  .table-wrap {
-    overflow-x: auto;
-  }
-
-  .rfc-mini {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-  }
-
-  .rfc-mini th,
-  .rfc-mini td {
-    padding: 0.75rem 0.9rem;
-    border-bottom: 1px solid var(--color-border);
-    text-align: left;
-    vertical-align: top;
-  }
-
-  .rfc-mini th {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-text-muted);
-    background: var(--color-surface-2);
-  }
-
-  .section-foot {
-    margin: var(--space-3) 0 0;
-  }
-
-  .quick-links {
-    display: grid;
-    gap: 0.5rem 1.5rem;
+  .platform-row {
+    list-style: none;
     margin: 0;
     padding: 0;
-    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
   }
 
-  @media (min-width: 640px) {
-    .quick-links {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 960px) {
-    .quick-links {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  .quick-links a {
-    display: block;
-    padding: 0.65rem 0.8rem;
+  .platform-row li {
+    padding: 0.55rem 0.85rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background: var(--color-surface);
-    text-decoration: none;
     font-size: 0.9rem;
-  }
-
-  .quick-links a:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+    font-weight: 600;
   }
 </style>

@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Resources"
+  description="Whitepaper, developer docs, public RFCs, and research for SensOS."
+>
+  <header class="page-header">
+    <p class="eyebrow">Resources</p>
+    <h1>Evaluate SensOS with the right depth</h1>
+    <p class="lede">
+      Public materials explain value and interfaces. Implementation detail stays
+      behind enterprise and partner access.
+    </p>
+  </header>
+
+  <section class="home-block" id="whitepaper">
+    <h2>Whitepaper</h2>
+    <p>
+      <strong>Observation First: Runtime Safety Without Changing Your Model.</strong>
+    </p>
+    <p>
+      Executive brief for CIO/CISO/CTO audiences covering the black-box gap,
+      observation-centered control, and open-standards interoperability.
+    </p>
+    <p class="muted">Full PDF packaging in progress — request via Enterprise.</p>
+    <a class="btn" href="/enterprise#demo">Request Whitepaper</a>
+  </section>
+
+  <section class="home-block">
+    <h2>Developer Docs</h2>
+    <p>Integrate against public contracts and conformance tiers.</p>
+    <a class="btn" href="/developer">Open Developer Docs</a>
+  </section>
+
+  <section class="home-block">
+    <h2>Public RFCs</h2>
+    <p>
+      Interface standards: interoperability, ABI, behavior, and conformance.
+      Not algorithms. Not kernels. Not wire secrets.
+    </p>
+    <a class="btn" href="/rfc">Browse Standards</a>
+  </section>
+
+  <section class="home-block" id="case-studies">
+    <h2>Case Studies</h2>
+    <p>Production patterns for AI platform and risk teams (coming soon).</p>
+  </section>
+
+  <section class="home-block" id="research">
+    <h2>Research</h2>
+    <p>
+      Selected public notes and mathematical interface contracts.
+      Tuned formulas and calibration remain unpublished.
+    </p>
+    <a class="btn" href="/rfc">View Public Standards</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .home-block {
+    margin-bottom: 2rem;
+    max-width: 48rem;
+  }
+
+  .home-block h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  .home-block p {
+    color: var(--color-text-muted);
+  }
+
+  .muted {
+    font-size: 0.9rem;
+  }
+</style>

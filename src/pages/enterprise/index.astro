@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../lib/site';
+---
+
+<BaseLayout
+  title="Enterprise"
+  description="Request a SensOS demo and enterprise security review."
+>
+  <header class="page-header">
+    <p class="eyebrow">Enterprise</p>
+    <h1>Runtime safety for production AI</h1>
+    <p class="lede">
+      For CIO, CISO, CTO, and AI platform teams evaluating observation-centered
+      control without model replacement.
+    </p>
+  </header>
+
+  <section class="panel panel-pad" id="demo" style="margin-bottom: 2rem;">
+    <h2>Request Demo</h2>
+    <p>
+      Share your stack, risk priorities, and deployment constraints.
+      We will schedule a technical demo focused on observable guarantees —
+      not proprietary internals.
+    </p>
+    <div class="btn-row" style="margin-top: 1rem;">
+      <a class="btn btn-primary" href={`mailto:${SITE.contactEmail}?subject=SensOS%20Enterprise%20Demo`}>
+        Email {SITE.contactEmail}
+      </a>
+      <a class="btn" href="/resources#whitepaper">Read Whitepaper</a>
+    </div>
+  </section>
+
+  <section style="margin-bottom: 2rem;">
+    <h2>What enterprise buyers get</h2>
+    <ul>
+      <li>Model-agnostic runtime oversight</li>
+      <li>Auditable observation and intervention evidence</li>
+      <li>Public interface standards for interoperability</li>
+      <li>Partner/enterprise specifications under agreement (not on the public site)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Contact</h2>
+    <p>
+      Company: {SITE.orgLegal}<br />
+      Product site: <a href={SITE.url}>{SITE.url}</a><br />
+      Standards: <a href="/rfc">Public RFCs</a>
+    </p>
+  </section>
+</BaseLayout>
